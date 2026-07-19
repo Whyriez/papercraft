@@ -62,7 +62,6 @@ export default function Index({ auth, categories }: Props) {
             reader.readAsDataURL(file);
         } else {
             setData('image', null);
-            // Kembalikan ke gambar asli jika sedang edit, atau kosongkan jika tambah baru
             setImagePreview(editingCategory?.image_path ? `/storage/${editingCategory.image_path}` : null);
         }
     };
@@ -88,7 +87,6 @@ export default function Index({ auth, categories }: Props) {
         });
     };
 
-    // 🌟 BIND DATA EDIT (Termasuk Gambar)
     const handleEdit = (cat: Category) => {
         setEditingCategory(cat);
         setData({
@@ -97,7 +95,6 @@ export default function Index({ auth, categories }: Props) {
             image: null,
             _method: 'put',
         });
-        // Tampilkan gambar dari database ke kotak preview
         setImagePreview(cat.image_path ? `/storage/${cat.image_path}` : null);
         clearErrors();
         if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -153,7 +150,6 @@ export default function Index({ auth, categories }: Props) {
         });
     };
 
-    // 🌟 Tambahkan image_path ke array rata (flatten) agar bisa dipakai di custom Dropdown
     const flattenCategories = (cats: Category[], level = 0, result: any[] = []) => {
         cats.forEach(cat => {
             result.push({ id: cat.id, name: cat.name, level, image_path: cat.image_path });
@@ -171,7 +167,6 @@ export default function Index({ auth, categories }: Props) {
         (!editingCategory || cat.id !== editingCategory.id)
     );
 
-    // Dapatkan data kategori yang dipilih untuk form header dropdown
     const selectedCategory = data.parent_id
         ? flatCategories.find(c => c.id.toString() === data.parent_id)
         : null;
@@ -204,7 +199,6 @@ export default function Index({ auth, categories }: Props) {
                                             )}
                                         </button>
 
-                                        {/* 🌟 LOGO / IMAGE DI LIST TREE VIEW */}
                                         <div className={`flex flex-shrink-0 items-center justify-center w-11 h-11 rounded-xl overflow-hidden shadow-[0_6px_12px_rgba(82,59,40,0.06)] border ${level === 0 ? 'bg-[#e6b95b] text-white border-transparent' : 'bg-[#fcfaf6] text-[#a97b5b] border-[#eadfce]'}`}>
                                             {cat.image_path ? (
                                                 <img src={`/storage/${cat.image_path}`} alt={cat.name} className="w-full h-full object-cover" />
@@ -281,8 +275,8 @@ export default function Index({ auth, categories }: Props) {
 
             <div className="mx-auto flex max-w-7xl flex-col gap-10 pb-12 lg:flex-row">
 
-                {/* KOLOM KIRI: Form Kategori */}
-                <div className="w-full lg:w-1/3" ref={formRef}>
+                {/* KOLOM KIRI: Form Kategori (PENTING: relative z-30 ditambahkan) */}
+                <div className="w-full lg:w-1/3 relative z-30" ref={formRef}>
 
                     {flashMsg && (
                         <div className={`mb-6 p-5 rounded-2xl border font-bold flex items-center gap-3 transition-all shadow-sm ${flashMsg.type === 'success' ? 'bg-[#f1f6f0] text-[#4a6b43] border-[#a9c7a3]' : 'bg-[#fff0ed] text-[#b94a2e] border-[#e07a5f]'}`}>
@@ -290,8 +284,15 @@ export default function Index({ auth, categories }: Props) {
                         </div>
                     )}
 
-                    <div className={`relative overflow-hidden rounded-[30px] border border-[#eadfce] p-6 shadow-[0_16px_30px_rgba(82,59,40,0.06)] sm:p-8 sticky top-28 transition-colors ${editingCategory ? 'bg-[#f8eedf] ring-4 ring-[#e6b95b]/30' : data.parent_id !== '' ? 'bg-[#f4e7d4] ring-4 ring-[#e9d3bf]' : 'bg-[#f4e7d4]'}`}>
-                        <h3 className="font-black text-xl text-[#2f2f2f] mb-8 flex items-center gap-3">
+                    {/* PENTING: overflow-hidden dihapus dari sini */}
+                    <div className={`relative rounded-[30px] border border-[#eadfce] p-6 shadow-[0_16px_30px_rgba(82,59,40,0.06)] sm:p-8 sticky top-28 transition-colors ${editingCategory ? 'bg-[#f8eedf] ring-4 ring-[#e6b95b]/30' : data.parent_id !== '' ? 'bg-[#f4e7d4] ring-4 ring-[#e9d3bf]' : 'bg-[#f4e7d4]'}`}>
+
+                        {/* Background Dekorasi Blur dipisah ke kontainer baru agar overflow-hidden tidak mempengaruhi form */}
+                        <div className="absolute inset-0 overflow-hidden rounded-[30px] pointer-events-none z-0">
+                            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#e9d3bf] rounded-full blur-2xl opacity-60"></div>
+                        </div>
+
+                        <h3 className="relative z-10 font-black text-xl text-[#2f2f2f] mb-8 flex items-center gap-3">
                             <div className={`flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-md ${editingCategory ? 'bg-[#e6b95b]' : 'bg-[#c97758]'}`}>
                                 {editingCategory ? (
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
@@ -341,8 +342,9 @@ export default function Index({ auth, categories }: Props) {
                                     <svg className={`w-5 h-5 text-[#a97b5b] transition-transform flex-shrink-0 ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
                                 </button>
 
+                                {/* Z-INDEX 100 ditambahkan disini */}
                                 {isDropdownOpen && (
-                                    <div className="absolute z-50 w-full mt-2 bg-[#fcfaf6] rounded-2xl shadow-[0_20px_40px_rgba(82,59,40,0.15)] border border-[#eadfce] overflow-hidden">
+                                    <div className="absolute z-[100] w-full mt-2 bg-[#fcfaf6] rounded-2xl shadow-[0_20px_40px_rgba(82,59,40,0.15)] border border-[#eadfce] overflow-hidden">
                                         <div className="p-3 border-b border-[#eadfce] bg-[#f4e7d4]">
                                             <input
                                                 type="text"
@@ -427,8 +429,6 @@ export default function Index({ auth, categories }: Props) {
                                 )}
                             </div>
                         </form>
-
-                        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#e9d3bf] rounded-full blur-2xl opacity-60 pointer-events-none"></div>
                     </div>
                 </div>
 

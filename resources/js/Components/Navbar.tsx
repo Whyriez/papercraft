@@ -15,8 +15,8 @@ export default function Navbar({ initialSearch = '' }: { initialSearch?: string 
         const params = new URLSearchParams();
         if (searchQuery) params.set('search', searchQuery);
 
-        // Pindah ke Home dan filter data
-        router.get(`/?${params.toString()}#featured`, {}, {
+        // 🌟 PERBAIKAN 1: Arahkan ke #filtered-view agar langsung otomatis scroll ke hasil pencarian
+        router.get(`/?${params.toString()}#filtered-view`, {}, {
             preserveState: true,
         });
 
@@ -25,19 +25,21 @@ export default function Navbar({ initialSearch = '' }: { initialSearch?: string 
 
     return (
         <nav className="fixed left-0 right-0 top-4 z-50 px-4 sm:px-6">
-            <div className="mx-auto flex max-w-7xl flex-col gap-0 rounded-[34px] border border-[#eadfce] bg-[#fcfaf6]/95 px-5 py-4 shadow-[0_18px_45px_rgba(82,59,40,0.08)] backdrop-blur-sm transition-all duration-300">
-                <div className="flex items-center justify-between gap-6">
+            <div className="mx-auto flex max-w-7xl flex-col gap-0 rounded-[34px] border border-[#eadfce] bg-[#fcfaf6]/95 px-5 py-3 sm:py-4 shadow-[0_18px_45px_rgba(82,59,40,0.08)] backdrop-blur-sm transition-all duration-300">
+                <div className="flex items-center justify-between gap-4 sm:gap-6">
 
                     {/* Logo (shrink-0 agar tidak tertekan) */}
                     <Link href="/" className="flex shrink-0 items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#c97758] text-white shadow-[0_14px_28px_rgba(82,59,40,0.12)] transition-transform hover:-translate-y-0.5">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        {/* 🌟 PERBAIKAN 2: Ukuran logo sedikit dikecilkan di mobile agar teks merek muat */}
+                        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-[#c97758] text-white shadow-[0_14px_28px_rgba(82,59,40,0.12)] transition-transform hover:-translate-y-0.5">
+                            <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4h10l3 7-8 9-8-9 3-7z" />
                             </svg>
                         </div>
-                        <div className="hidden sm:block">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-[#a97b5b]">PaperCraft</p>
-                            <p className="text-sm font-semibold text-[#67574b]">Layered models</p>
+                        {/* 🌟 PERBAIKAN 2: Class 'hidden sm:block' dihapus. Ukuran teks disesuaikan untuk mobile */}
+                        <div>
+                            <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.34em] text-[#a97b5b]">PaperCraft</p>
+                            <p className="text-xs sm:text-sm font-semibold text-[#67574b]">Layered models</p>
                         </div>
                     </Link>
 
@@ -63,15 +65,15 @@ export default function Navbar({ initialSearch = '' }: { initialSearch?: string 
                     {/* Desktop Menu */}
                     <div className="hidden shrink-0 items-center gap-8 text-sm font-bold text-[#67574b] lg:flex">
                         <Link href="/" className="transition-colors hover:text-[#c97758]">Home</Link>
-                        <Link href="/?all=1#featured" className="transition-colors hover:text-[#c97758]">Explore</Link>
-                        <Link href="/?all=1#categories" className="transition-colors hover:text-[#c97758]">Categories</Link>
+                        <Link href="/?all=1#filtered-view" className="transition-colors hover:text-[#c97758]">Explore</Link>
+                        <Link href="/#categories" className="transition-colors hover:text-[#c97758]">Categories</Link>
                     </div>
 
                     {/* Mobile Toggle */}
                     <div className="flex shrink-0 items-center gap-3 lg:hidden">
                         <button
                             type="button"
-                            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#eadfce] bg-white text-[#c97758] shadow-[0_10px_20px_rgba(82,59,40,0.06)] transition-all hover:-translate-y-0.5 hover:bg-[#f6efe6]"
+                            className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-[#eadfce] bg-white text-[#c97758] shadow-[0_10px_20px_rgba(82,59,40,0.06)] transition-all hover:-translate-y-0.5 hover:bg-[#f6efe6]"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             aria-label="Toggle menu"
                         >
@@ -105,8 +107,10 @@ export default function Navbar({ initialSearch = '' }: { initialSearch?: string 
                         </form>
 
                         <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="rounded-2xl px-5 py-3 transition-colors hover:bg-[#f6efe6] hover:text-[#c97758]">Home</Link>
-                        <Link href="/?all=1#featured" onClick={() => setIsMobileMenuOpen(false)} className="rounded-2xl px-5 py-3 transition-colors hover:bg-[#f6efe6] hover:text-[#c97758]">Explore</Link>
-                        <Link href="/?all=1#categories" onClick={() => setIsMobileMenuOpen(false)} className="rounded-2xl px-5 py-3 transition-colors hover:bg-[#f6efe6] hover:text-[#c97758]">Categories</Link>
+                        {/* 🌟 PERBAIKAN: Arahkan Menu Explore di Mobile ke #filtered-view */}
+                        <Link href="/?all=1#filtered-view" onClick={() => setIsMobileMenuOpen(false)} className="rounded-2xl px-5 py-3 transition-colors hover:bg-[#f6efe6] hover:text-[#c97758]">Explore</Link>
+                        {/* 🌟 PERBAIKAN: Arahkan Menu Categories di Mobile ke #categories */}
+                        <Link href="/#categories" onClick={() => setIsMobileMenuOpen(false)} className="rounded-2xl px-5 py-3 transition-colors hover:bg-[#f6efe6] hover:text-[#c97758]">Categories</Link>
                     </div>
                 )}
             </div>

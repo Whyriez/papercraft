@@ -16,7 +16,7 @@ interface Props {
 export default function AuthenticatedLayout({ user, header, children }: PropsWithChildren<Props>) {
     // State untuk toggle sidebar di tampilan mobile
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    
+
     // Mengambil URL aktif saat ini untuk styling menu sidebar
     const { url } = usePage();
 
@@ -28,8 +28,9 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
     ];
 
     return (
-        <div 
-            className="flex min-h-screen font-sans text-[#2f2f2f] selection:bg-[#c97758] selection:text-white"
+        // PERUBAHAN PENTING 1: Gunakan 'h-screen overflow-hidden' agar halaman web tidak bisa discroll secara global.
+        <div
+            className="flex h-screen overflow-hidden font-sans text-[#2f2f2f] selection:bg-[#c97758] selection:text-white"
             style={{
                 backgroundColor: '#fcfaf6',
                 backgroundImage:
@@ -38,8 +39,8 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
             }}
         >
             {/* Sidebar (Desktop) */}
-            <aside className="hidden md:flex w-72 flex-col border-r border-[#eadfce] bg-[#f7f3ea]/80 backdrop-blur-md transition-all shadow-[10px_0_30px_rgba(82,59,40,0.03)] z-30">
-                <div className="flex h-20 items-center border-b border-[#eadfce] px-8">
+            <aside className="hidden md:flex w-72 flex-col border-r border-[#eadfce] bg-[#f7f3ea]/80 backdrop-blur-md shadow-[10px_0_30px_rgba(82,59,40,0.03)] z-30 shrink-0">
+                <div className="flex h-20 shrink-0 items-center border-b border-[#eadfce] px-8">
                     <Link href="/" className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c97758] text-white shadow-[0_10px_20px_rgba(201,119,88,0.2)] ring-2 ring-[#fcfaf6]">
                             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4h10l3 7-8 9-8-9 3-7z" /></svg>
@@ -48,20 +49,19 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                     </Link>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-6 py-8 space-y-2">
+                <div className="flex-1 overflow-y-auto px-6 py-8 space-y-2 scrollbar-thin scrollbar-thumb-[#eadfce]">
                     <div className="mb-4 px-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#a97b5b]">Menu Utama</div>
-                    
+
                     {navigation.map((item) => {
                         const isActive = url.startsWith(item.href);
                         return (
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${
-                                    isActive 
-                                    ? 'bg-[#c97758] text-white shadow-[0_12px_24px_rgba(201,119,88,0.22)]' 
+                                className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${isActive
+                                    ? 'bg-[#c97758] text-white shadow-[0_12px_24px_rgba(201,119,88,0.22)]'
                                     : 'text-[#67574b] hover:bg-[#f1e6d5] hover:text-[#2f2f2f]'
-                                }`}
+                                    }`}
                             >
                                 <svg className={`h-5 w-5 ${isActive ? 'text-white' : 'text-[#a97b5b]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
@@ -73,7 +73,7 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                 </div>
 
                 {/* Profil User di Bawah Sidebar */}
-                <div className="border-t border-[#eadfce] p-6 bg-[#fcfaf6]/50">
+                <div className="shrink-0 border-t border-[#eadfce] p-6 bg-[#fcfaf6]/50">
                     <div className="flex items-center gap-4 rounded-2xl border border-[#eadfce] bg-white p-3 shadow-[0_8px_16px_rgba(82,59,40,0.04)]">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6b95b] font-black text-white shadow-[0_8px_16px_rgba(230,185,91,0.25)]">
                             {user.name.charAt(0)}
@@ -87,12 +87,13 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
             </aside>
 
             {/* Area Konten Kanan */}
-            <div className="flex min-w-0 flex-1 flex-col">
-                
+            {/* PERUBAHAN PENTING 2: Pembungkus kanan ini butuh flex flex-col agar main dan header bisa tersusun vertikal secara rapi */}
+            <div className="flex flex-1 flex-col overflow-hidden">
+
                 {/* Header Utama (Topbar) */}
-                <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-[#eadfce] bg-[#fcfaf6]/90 px-4 backdrop-blur-md sm:px-8 shadow-[0_4px_20px_rgba(82,59,40,0.02)]">
+                <header className="shrink-0 z-20 flex h-20 items-center justify-between border-b border-[#eadfce] bg-[#fcfaf6]/90 px-4 backdrop-blur-md sm:px-8 shadow-[0_4px_20px_rgba(82,59,40,0.02)]">
                     {/* Tombol Mobile Menu */}
-                    <button 
+                    <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         className="rounded-full border border-[#eadfce] bg-white p-2.5 text-[#c97758] shadow-[0_8px_16px_rgba(82,59,40,0.06)] transition-all hover:-translate-y-0.5 hover:bg-[#f1e6d5] md:hidden"
                     >
@@ -113,9 +114,9 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                             <span className="hidden sm:inline">Lihat Web</span>
                         </a>
                         <div className="h-6 w-px bg-[#eadfce]"></div>
-                        <Link 
-                            href="/logout" 
-                            method="post" 
+                        <Link
+                            href="/logout"
+                            method="post"
                             as="button"
                             className="rounded-full bg-[#f4e7d4] px-4 py-2 text-xs font-bold uppercase tracking-[0.15em] text-[#a97b5b] transition-all hover:-translate-y-0.5 hover:bg-[#e9d3bf] hover:text-[#8a5d40] shadow-[0_8px_16px_rgba(82,59,40,0.05)]"
                         >
@@ -141,11 +142,11 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${
-                                                isActive 
-                                                ? 'bg-[#c97758] text-white shadow-[0_12px_24px_rgba(201,119,88,0.22)]' 
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${isActive
+                                                ? 'bg-[#c97758] text-white shadow-[0_12px_24px_rgba(201,119,88,0.22)]'
                                                 : 'text-[#67574b] hover:bg-[#f1e6d5] hover:text-[#2f2f2f]'
-                                            }`}
+                                                }`}
                                         >
                                             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
@@ -155,7 +156,7 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                                     );
                                 })}
                             </div>
-                            
+
                             <div className="mt-8 border-t border-[#eadfce] pt-6">
                                 <div className="flex items-center gap-4 rounded-2xl border border-[#eadfce] bg-white p-3 shadow-[0_8px_16px_rgba(82,59,40,0.04)]">
                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6b95b] font-black text-white shadow-[0_8px_16px_rgba(230,185,91,0.25)]">
@@ -172,7 +173,8 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                 )}
 
                 {/* Konten Utama (Render Page) */}
-                <main className="flex-1 p-4 sm:p-8">
+                {/* PERUBAHAN PENTING 3: Beri 'overflow-y-auto' di main konten ini, sehingga ini satu-satunya area yang bisa di-scroll */}
+                <main className="flex-1 overflow-y-auto p-4 sm:p-8">
                     {children}
                 </main>
             </div>

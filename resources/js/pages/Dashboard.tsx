@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState, useRef, FormEvent } from 'react';
+import { useState, useRef, useEffect, FormEvent } from 'react';
 
 // === TYPES ===
 interface Papercraft {
@@ -21,16 +21,119 @@ interface Banner {
     papercraft: Papercraft | null;
 }
 
+interface SiteSettings {
+    whatsapp?: string | null;
+    email?: string | null;
+    youtube?: string | null;
+    tiktok?: string | null;
+    instagram?: string | null;
+}
+
 interface DashboardProps extends PageProps {
     banners: Banner[];
     papercrafts: Papercraft[];
+    settings?: SiteSettings;
+    flash?: { success?: string; error?: string };
 }
 
-export default function Dashboard({ auth, banners, papercrafts }: DashboardProps) {
+// === KOMPONEN HELPER: CUSTOM SELECT DENGAN SEARCH ===
+const CustomSelect = ({ items, value, onChange, placeholder, error }: { items: Papercraft[], value: string | number, onChange: (val: string) => void, placeholder: string, error?: string }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Menutup dropdown saat klik di luar area
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const filteredItems = items.filter(item => item.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    const selectedItem = items.find(item => item.id.toString() === value.toString());
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <div
+                onClick={() => setIsOpen(!isOpen)}
+                className={`w-full px-5 py-4 rounded-2xl border ${isOpen ? 'border-[#c97758] ring-1 ring-[#c97758]' : 'border-[#eadfce]'} bg-[#fcfaf6] text-sm font-semibold text-[#2f2f2f] cursor-pointer flex justify-between items-center transition-all`}
+            >
+                <span className={selectedItem ? 'text-[#2f2f2f]' : 'text-[#bcae9f]'}>
+                    {selectedItem ? selectedItem.title : placeholder}
+                </span>
+                <svg className={`w-5 h-5 text-[#a97b5b] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+
+            {isOpen && (
+                <div className="absolute z-50 w-full mt-2 bg-white border border-[#eadfce] rounded-2xl shadow-[0_15px_40px_rgba(82,59,40,0.12)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="p-3 border-b border-[#eadfce] bg-[#fcfaf6]">
+                        <div className="relative">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a97b5b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input
+                                type="text"
+                                autoFocus
+                                placeholder="Cari papercraft..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#eadfce] bg-white text-sm focus:outline-none focus:border-[#c97758] focus:ring-1 focus:ring-[#c97758] transition-all"
+                            />
+                        </div>
+                    </div>
+                    <div className="max-h-60 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-[#eadfce]">
+                        {filteredItems.length > 0 ? (
+                            filteredItems.map((item) => (
+                                <div
+                                    key={item.id}
+                                    onClick={() => { onChange(item.id.toString()); setIsOpen(false); setSearchQuery(''); }}
+                                    className="px-4 py-3 rounded-xl text-sm font-medium text-[#2f2f2f] hover:bg-[#f6ecdf] hover:text-[#c97758] cursor-pointer transition-colors"
+                                >
+                                    {item.title}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="px-4 py-8 text-center text-sm font-medium text-[#a97b5b]">
+                                Papercraft tidak ditemukan.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+            {error && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{error}</p>}
+        </div>
+    );
+};
+
+
+export default function Dashboard({ auth, banners, papercrafts, settings }: DashboardProps) {
+    const { flash } = usePage<DashboardProps>().props;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-    const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
+    // State untuk Popup Notifikasi
+    const [toast, setToast] = useState<{ show: boolean, message: string, type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
+
+    // Efek untuk menangkap flash message dari backend (jika ada)
+    useEffect(() => {
+        if (flash?.success) showToast(flash.success, 'success');
+        if (flash?.error) showToast(flash.error, 'error');
+    }, [flash]);
+
+    // Fungsi Trigger Notifikasi
+    const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+        setToast({ show: true, message, type });
+        setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 4000);
+    };
+
+    // Form Banner
+    const { data: bannerData, setData: setBannerData, post: postBanner, processing: processingBanner, errors: bannerErrors, reset: resetBanner, clearErrors: clearBannerErrors } = useForm({
         type: 'papercraft',
         papercraft_id: '',
         title: '',
@@ -38,43 +141,83 @@ export default function Dashboard({ auth, banners, papercrafts }: DashboardProps
         image: null as File | null,
     });
 
-    const { delete: destroy } = useForm();
+    const { delete: destroyBanner } = useForm();
+
+    // Form Pengaturan Situs
+    const { data: settingsData, setData: setSettingsData, post: postSettings, processing: processingSettings, errors: settingsErrors } = useForm({
+        whatsapp: settings?.whatsapp || '',
+        email: settings?.email || '',
+        youtube: settings?.youtube || '',
+        tiktok: settings?.tiktok || '',
+        instagram: settings?.instagram || '',
+    });
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setData('image', file);
+            setBannerData('image', file);
             const reader = new FileReader();
             reader.onloadend = () => setImagePreview(reader.result as string);
             reader.readAsDataURL(file);
         } else {
-            setData('image', null);
+            setBannerData('image', null);
             setImagePreview(null);
         }
     };
 
     const submitBanner = (e: FormEvent) => {
         e.preventDefault();
-        post('/admin/banners', {
+        postBanner('/admin/banners', {
             preserveScroll: true,
             onSuccess: () => {
-                reset();
+                resetBanner();
                 setImagePreview(null);
-                clearErrors();
+                clearBannerErrors();
                 if (fileInputRef.current) fileInputRef.current.value = '';
-            }
+                showToast('Banner berhasil ditambahkan!', 'success');
+            },
+            onError: () => showToast('Gagal menambahkan banner. Periksa form!', 'error'),
         });
     };
 
     const deleteBanner = (id: number) => {
         if (confirm('Hapus banner ini dari halaman depan?')) {
-            destroy(`/admin/banners/${id}`, { preserveScroll: true });
+            destroyBanner(`/admin/banners/${id}`, {
+                preserveScroll: true,
+                onSuccess: () => showToast('Banner berhasil dihapus!', 'success'),
+            });
         }
+    };
+
+    const submitSettings = (e: FormEvent) => {
+        e.preventDefault();
+        postSettings('/admin/settings', {
+            preserveScroll: true,
+            onSuccess: () => showToast('Pengaturan Sosial Media berhasil disimpan!', 'success'),
+            onError: () => showToast('Gagal menyimpan pengaturan. Periksa form!', 'error'),
+        });
     };
 
     return (
         <AuthenticatedLayout user={auth.user} header="Overview Dashboard">
             <Head title="Dashboard Admin" />
+
+            {/* 🌟 POPUP NOTIFICATION (TOAST) 🌟 */}
+            <div className={`fixed top-8 right-8 z-[100] transition-all duration-500 transform ${toast.show ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0 pointer-events-none'}`}>
+                <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border ${toast.type === 'success' ? 'bg-[#f4fbf4] border-[#a9c7a3] text-[#2f2f2f]' : 'bg-[#fff4f2] border-[#e07a5f] text-[#2f2f2f]'}`}>
+                    <div className={`flex shrink-0 items-center justify-center w-10 h-10 rounded-full ${toast.type === 'success' ? 'bg-[#a9c7a3]/20 text-[#6b8e61]' : 'bg-[#e07a5f]/20 text-[#e07a5f]'}`}>
+                        {toast.type === 'success' ? (
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                        ) : (
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                        )}
+                    </div>
+                    <div>
+                        <h4 className="text-sm font-black">{toast.type === 'success' ? 'Berhasil' : 'Peringatan'}</h4>
+                        <p className="text-xs font-semibold text-[#67574b] mt-0.5">{toast.message}</p>
+                    </div>
+                </div>
+            </div>
 
             <div className="mb-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <Link href="/admin/papercrafts" className="group relative overflow-hidden rounded-[30px] border border-[#eadfce] bg-[#fcfaf6] p-6 shadow-[0_18px_40px_rgba(82,59,40,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(82,59,40,0.12)] block">
@@ -115,44 +258,39 @@ export default function Dashboard({ auth, banners, papercrafts }: DashboardProps
             </div>
 
             <div className="grid gap-8 lg:grid-cols-[1fr_1.5fr]">
-
                 {/* Form Tambah Banner */}
-                <div className="relative overflow-hidden rounded-[30px] border border-[#eadfce] bg-[#f4e7d4] p-6 sm:p-8 shadow-[0_16px_30px_rgba(82,59,40,0.06)] h-fit sticky top-28">
-                    <h3 className="font-black text-xl text-[#2f2f2f] mb-6">Tambah Banner</h3>
+                <div className="relative rounded-[30px] border border-[#eadfce] bg-[#f4e7d4] p-6 sm:p-8 shadow-[0_16px_30px_rgba(82,59,40,0.06)] h-fit">
+                    <h3 className="font-black text-xl text-[#2f2f2f] mb-6 relative z-10">Tambah Banner</h3>
 
                     <form onSubmit={submitBanner} className="space-y-6 relative z-10">
-                        {/* Pilihan Tipe Banner */}
                         <div className="flex gap-4 p-1.5 bg-[#fcfaf6] rounded-2xl border border-[#eadfce]">
                             <button
                                 type="button"
-                                onClick={() => { setData('type', 'papercraft'); clearErrors(); }}
-                                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${data.type === 'papercraft' ? 'bg-[#c97758] text-white shadow-md' : 'text-[#a97b5b] hover:bg-[#f4e7d4]'}`}
+                                onClick={() => { setBannerData('type', 'papercraft'); clearBannerErrors(); }}
+                                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${bannerData.type === 'papercraft' ? 'bg-[#c97758] text-white shadow-md' : 'text-[#a97b5b] hover:bg-[#f4e7d4]'}`}
                             >
                                 Dari Papercraft
                             </button>
                             <button
                                 type="button"
-                                onClick={() => { setData('type', 'custom'); clearErrors(); }}
-                                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${data.type === 'custom' ? 'bg-[#e6b95b] text-white shadow-md' : 'text-[#a97b5b] hover:bg-[#f4e7d4]'}`}
+                                onClick={() => { setBannerData('type', 'custom'); clearBannerErrors(); }}
+                                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${bannerData.type === 'custom' ? 'bg-[#e6b95b] text-white shadow-md' : 'text-[#a97b5b] hover:bg-[#f4e7d4]'}`}
                             >
                                 Custom Banner
                             </button>
                         </div>
 
-                        {data.type === 'papercraft' ? (
+                        {bannerData.type === 'papercraft' ? (
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#a97b5b] mb-2">Pilih Papercraft</label>
-                                <select
-                                    value={data.papercraft_id}
-                                    onChange={e => setData('papercraft_id', e.target.value)}
-                                    className="w-full px-5 py-4 rounded-2xl border border-[#eadfce] bg-[#fcfaf6] text-sm font-semibold text-[#2f2f2f] focus:outline-none focus:border-[#c97758] focus:ring-1 focus:ring-[#c97758]"
-                                >
-                                    <option value="" disabled>-- Pilih Papercraft --</option>
-                                    {papercrafts.map(p => (
-                                        <option key={p.id} value={p.id}>{p.title}</option>
-                                    ))}
-                                </select>
-                                {errors.papercraft_id && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{errors.papercraft_id}</p>}
+                                {/* MENGGUNAKAN CUSTOM SELECT DENGAN PENCARIAN */}
+                                <CustomSelect
+                                    items={papercrafts}
+                                    value={bannerData.papercraft_id}
+                                    onChange={(val) => setBannerData('papercraft_id', val)}
+                                    placeholder="-- Ketik untuk mencari papercraft --"
+                                    error={bannerErrors.papercraft_id}
+                                />
                             </div>
                         ) : (
                             <div className="space-y-5">
@@ -160,19 +298,19 @@ export default function Dashboard({ auth, banners, papercrafts }: DashboardProps
                                     <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#a97b5b] mb-2">Judul Banner</label>
                                     <input
                                         type="text"
-                                        value={data.title}
-                                        onChange={e => setData('title', e.target.value)}
+                                        value={bannerData.title || ''}
+                                        onChange={e => setBannerData('title', e.target.value)}
                                         className="w-full px-5 py-4 rounded-2xl border border-[#eadfce] bg-[#fcfaf6] text-sm font-semibold text-[#2f2f2f] placeholder:text-[#bcae9f] focus:outline-none focus:border-[#e6b95b]"
                                         placeholder="Judul yang menarik..."
                                     />
-                                    {errors.title && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{errors.title}</p>}
+                                    {bannerErrors.title && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{bannerErrors.title}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#a97b5b] mb-2">Link Tujuan (Opsional)</label>
                                     <input
                                         type="text"
-                                        value={data.link_url}
-                                        onChange={e => setData('link_url', e.target.value)}
+                                        value={bannerData.link_url || ''}
+                                        onChange={e => setBannerData('link_url', e.target.value)}
                                         className="w-full px-5 py-4 rounded-2xl border border-[#eadfce] bg-[#fcfaf6] text-sm font-semibold text-[#2f2f2f] placeholder:text-[#bcae9f] focus:outline-none focus:border-[#e6b95b]"
                                         placeholder="https://..."
                                     />
@@ -193,13 +331,13 @@ export default function Dashboard({ auth, banners, papercrafts }: DashboardProps
                                             className="w-full text-sm text-[#67574b] file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#e6b95b] file:text-white hover:file:bg-[#d6a94b] cursor-pointer"
                                         />
                                     </div>
-                                    {errors.image && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{errors.image}</p>}
+                                    {bannerErrors.image && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{bannerErrors.image}</p>}
                                 </div>
                             </div>
                         )}
 
-                        <button type="submit" disabled={processing} className="w-full bg-[#2f2f2f] text-white px-6 py-4 rounded-full font-bold hover:bg-black transition-all shadow-[0_12px_24px_rgba(47,47,47,0.22)] disabled:opacity-50">
-                            {processing ? 'Menyimpan...' : 'Tambahkan ke Slider'}
+                        <button type="submit" disabled={processingBanner} className="w-full bg-[#2f2f2f] text-white px-6 py-4 rounded-full font-bold hover:bg-black transition-all shadow-[0_12px_24px_rgba(47,47,47,0.22)] disabled:opacity-50">
+                            {processingBanner ? 'Menyimpan...' : 'Tambahkan ke Slider'}
                         </button>
                     </form>
                     <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#e9d3bf] rounded-full blur-2xl opacity-60 pointer-events-none"></div>
@@ -254,7 +392,82 @@ export default function Dashboard({ auth, banners, papercrafts }: DashboardProps
                         })
                     )}
                 </div>
+            </div>
 
+            {/* 🌟 MANAJEMEN PENGATURAN KONTAK & SOSIAL MEDIA 🌟 */}
+            <div className="mt-16 mb-8 flex items-end justify-between border-b border-[#eadfce] pb-4">
+                <div>
+                    <h2 className="text-3xl font-black tracking-tight text-[#2f2f2f]">Kontak & Sosial Media</h2>
+                    <p className="text-[#67574b] mt-2 text-sm font-semibold">Atur informasi kontak dan tautan sosial media yang ditampilkan kepada pengguna.</p>
+                </div>
+            </div>
+
+            <div className="relative overflow-hidden rounded-[30px] border border-[#eadfce] bg-[#fcfaf6] p-6 sm:p-8 shadow-[0_16px_30px_rgba(82,59,40,0.06)] mb-10">
+                <form onSubmit={submitSettings} className="space-y-6">
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#a97b5b] mb-2">WhatsApp Number</label>
+                            <input
+                                type="text"
+                                value={settingsData.whatsapp || ''}
+                                onChange={e => setSettingsData('whatsapp', e.target.value)}
+                                className="w-full px-5 py-4 rounded-2xl border border-[#eadfce] bg-white text-sm font-semibold text-[#2f2f2f] placeholder:text-[#bcae9f] focus:outline-none focus:border-[#e6b95b]"
+                                placeholder="Contoh: 6281234567890"
+                            />
+                            {settingsErrors.whatsapp && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{settingsErrors.whatsapp}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#a97b5b] mb-2">Email Address</label>
+                            <input
+                                type="email"
+                                value={settingsData.email || ''}
+                                onChange={e => setSettingsData('email', e.target.value)}
+                                className="w-full px-5 py-4 rounded-2xl border border-[#eadfce] bg-white text-sm font-semibold text-[#2f2f2f] placeholder:text-[#bcae9f] focus:outline-none focus:border-[#e6b95b]"
+                                placeholder="emailkamu@gmail.com"
+                            />
+                            {settingsErrors.email && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{settingsErrors.email}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#a97b5b] mb-2">Instagram URL</label>
+                            <input
+                                type="url"
+                                value={settingsData.instagram || ''}
+                                onChange={e => setSettingsData('instagram', e.target.value)}
+                                className="w-full px-5 py-4 rounded-2xl border border-[#eadfce] bg-white text-sm font-semibold text-[#2f2f2f] placeholder:text-[#bcae9f] focus:outline-none focus:border-[#e6b95b]"
+                                placeholder="https://instagram.com/username"
+                            />
+                            {settingsErrors.instagram && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{settingsErrors.instagram}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#a97b5b] mb-2">YouTube URL</label>
+                            <input
+                                type="url"
+                                value={settingsData.youtube || ''}
+                                onChange={e => setSettingsData('youtube', e.target.value)}
+                                className="w-full px-5 py-4 rounded-2xl border border-[#eadfce] bg-white text-sm font-semibold text-[#2f2f2f] placeholder:text-[#bcae9f] focus:outline-none focus:border-[#e6b95b]"
+                                placeholder="https://youtube.com/c/username"
+                            />
+                            {settingsErrors.youtube && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{settingsErrors.youtube}</p>}
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#a97b5b] mb-2">TikTok URL</label>
+                            <input
+                                type="url"
+                                value={settingsData.tiktok || ''}
+                                onChange={e => setSettingsData('tiktok', e.target.value)}
+                                className="w-full px-5 py-4 rounded-2xl border border-[#eadfce] bg-white text-sm font-semibold text-[#2f2f2f] placeholder:text-[#bcae9f] focus:outline-none focus:border-[#e6b95b]"
+                                placeholder="https://tiktok.com/@username"
+                            />
+                            {settingsErrors.tiktok && <p className="mt-2 text-xs font-bold text-[#e07a5f]">{settingsErrors.tiktok}</p>}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end mt-6">
+                        <button type="submit" disabled={processingSettings} className="bg-[#2f2f2f] text-white px-8 py-4 rounded-full font-bold hover:bg-black transition-all shadow-[0_12px_24px_rgba(47,47,47,0.22)] disabled:opacity-50">
+                            {processingSettings ? 'Menyimpan...' : 'Simpan Pengaturan'}
+                        </button>
+                    </div>
+                </form>
             </div>
         </AuthenticatedLayout>
     );

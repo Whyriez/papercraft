@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PapercraftController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FrontController;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/admin/banners', [BannerController::class, 'store'])->name('admin.banners.store');
     Route::delete('/admin/banners/{id}', [BannerController::class, 'destroy'])->name('admin.banners.destroy');
+
+    Route::post('/admin/settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
