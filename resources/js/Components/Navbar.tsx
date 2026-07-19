@@ -1,19 +1,25 @@
 import { Link, router } from '@inertiajs/react';
-import { useState, useEffect, FormEvent } from 'react';
+import type { FormEvent } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Navbar({ initialSearch = '' }: { initialSearch?: string }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState(initialSearch);
 
     // Sinkronisasi jika pencarian di-reset dari luar (contoh: tombol Reset di Home)
-    useEffect(() => {
-        setSearchQuery(initialSearch || '');
+        useEffect(() => {
+        const to = setTimeout(() => setSearchQuery(initialSearch || ''), 0);
+
+        return () => clearTimeout(to);
     }, [initialSearch]);
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
         const params = new URLSearchParams();
-        if (searchQuery) params.set('search', searchQuery);
+
+        if (searchQuery) {
+params.set('search', searchQuery);
+}
 
         // 🌟 PERBAIKAN 1: Arahkan ke #filtered-view agar langsung otomatis scroll ke hasil pencarian
         router.get(`/?${params.toString()}#filtered-view`, {}, {
@@ -51,7 +57,7 @@ export default function Navbar({ initialSearch = '' }: { initialSearch?: string 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-transparent text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none"
-                            placeholder="Cari karakter, armor, senjata..."
+                            placeholder="Search characters, armor, weapons..."
                         />
                         {searchQuery && (
                             <button type="button" onClick={() => setSearchQuery('')} className="text-gray-500 hover:text-gray-300 transition-colors">
@@ -100,7 +106,7 @@ export default function Navbar({ initialSearch = '' }: { initialSearch?: string 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full bg-transparent text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none"
-                                placeholder="Cari papercraft..."
+                                placeholder="Search papercraft..."
                             />
                         </form>
 

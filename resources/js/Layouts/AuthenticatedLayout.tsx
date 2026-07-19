@@ -1,5 +1,6 @@
-import { useState, PropsWithChildren, ReactNode } from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import type { PropsWithChildren, ReactNode } from 'react';
+import { useState } from 'react';
 
 // Tipe data bawaan
 interface User {
@@ -54,6 +55,7 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
 
                     {navigation.map((item) => {
                         const isActive = url.startsWith(item.href);
+
                         return (
                             <Link
                                 key={item.name}
@@ -138,6 +140,7 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                             <div className="space-y-2">
                                 {navigation.map((item) => {
                                     const isActive = url.startsWith(item.href);
+
                                     return (
                                         <Link
                                             key={item.name}

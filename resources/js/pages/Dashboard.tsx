@@ -1,7 +1,8 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { PageProps } from '@/types';
-import { useState, useRef, useEffect, FormEvent } from 'react';
+import type { FormEvent } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import type { PageProps } from '@/types';
 
 // === TYPES ===
 interface Papercraft {
@@ -51,6 +52,7 @@ const CustomSelect = ({ items, value, onChange, placeholder, error }: { items: P
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
+
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
@@ -93,7 +95,9 @@ const CustomSelect = ({ items, value, onChange, placeholder, error }: { items: P
                             filteredItems.map((item) => (
                                 <div
                                     key={item.id}
-                                    onClick={() => { onChange(item.id.toString()); setIsOpen(false); setSearchQuery(''); }}
+                                    onClick={() => {
+ onChange(item.id.toString()); setIsOpen(false); setSearchQuery(''); 
+}}
                                     className="px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white cursor-pointer transition-colors"
                                 >
                                     {item.title}
@@ -121,17 +125,22 @@ export default function Dashboard({ auth, banners, papercrafts, settings }: Dash
     // State untuk Popup Notifikasi
     const [toast, setToast] = useState<{ show: boolean, message: string, type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
 
-    // Efek untuk menangkap flash message dari backend (jika ada)
-    useEffect(() => {
-        if (flash?.success) showToast(flash.success, 'success');
-        if (flash?.error) showToast(flash.error, 'error');
-    }, [flash]);
-
     // Fungsi Trigger Notifikasi
     const showToast = (message: string, type: 'success' | 'error' = 'success') => {
         setToast({ show: true, message, type });
         setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 4000);
     };
+
+    // Efek untuk menangkap flash message dari backend (jika ada)
+    useEffect(() => {
+        if (flash?.success) {
+            showToast(flash.success, 'success');
+        }
+
+        if (flash?.error) {
+            showToast(flash.error, 'error');
+        }
+    }, [flash]);
 
     // Form Banner
     const { data: bannerData, setData: setBannerData, post: postBanner, processing: processingBanner, errors: bannerErrors, reset: resetBanner, clearErrors: clearBannerErrors } = useForm({
@@ -155,6 +164,7 @@ export default function Dashboard({ auth, banners, papercrafts, settings }: Dash
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setBannerData('image', file);
             const reader = new FileReader();
@@ -174,7 +184,11 @@ export default function Dashboard({ auth, banners, papercrafts, settings }: Dash
                 resetBanner();
                 setImagePreview(null);
                 clearBannerErrors();
-                if (fileInputRef.current) fileInputRef.current.value = '';
+
+                if (fileInputRef.current) {
+fileInputRef.current.value = '';
+}
+
                 showToast('Banner berhasil ditambahkan!', 'success');
             },
             onError: () => showToast('Gagal menambahkan banner. Periksa form!', 'error'),
@@ -267,14 +281,18 @@ export default function Dashboard({ auth, banners, papercrafts, settings }: Dash
                         <div className="flex gap-4 p-1.5 bg-gray-800 rounded-2xl border border-gray-700">
                             <button
                                 type="button"
-                                onClick={() => { setBannerData('type', 'papercraft'); clearBannerErrors(); }}
+                                onClick={() => {
+ setBannerData('type', 'papercraft'); clearBannerErrors(); 
+}}
                                 className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${bannerData.type === 'papercraft' ? 'bg-gray-200 text-gray-900 shadow-md' : 'text-gray-400 hover:bg-gray-700'}`}
                             >
                                 Dari Papercraft
                             </button>
                             <button
                                 type="button"
-                                onClick={() => { setBannerData('type', 'custom'); clearBannerErrors(); }}
+                                onClick={() => {
+ setBannerData('type', 'custom'); clearBannerErrors(); 
+}}
                                 className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${bannerData.type === 'custom' ? 'bg-gray-200 text-gray-900 shadow-md' : 'text-gray-400 hover:bg-gray-700'}`}
                             >
                                 Custom Banner

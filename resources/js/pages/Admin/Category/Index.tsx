@@ -1,6 +1,7 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEventHandler, useRef, useState, useEffect } from 'react';
+import type { FormEventHandler} from 'react';
+import { useRef, useState, useEffect } from 'react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 interface Category {
     id: number;
@@ -48,11 +49,13 @@ export default function Index({ auth, categories }: Props) {
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
+
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('image', file);
             const reader = new FileReader();
@@ -97,7 +100,10 @@ export default function Index({ auth, categories }: Props) {
         });
         setImagePreview(cat.image_path ? `/storage/${cat.image_path}` : null);
         clearErrors();
-        if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        if (formRef.current) {
+formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
     };
 
     const cancelEdit = () => {
@@ -106,7 +112,10 @@ export default function Index({ auth, categories }: Props) {
         setData({ name: '', parent_id: '', image: null, _method: 'post' });
         setImagePreview(null);
         clearErrors();
-        if (fileInputRef.current) fileInputRef.current.value = '';
+
+        if (fileInputRef.current) {
+fileInputRef.current.value = '';
+}
     };
 
     const confirmDelete = (cat: Category) => {
@@ -123,7 +132,9 @@ export default function Index({ auth, categories }: Props) {
     };
 
     const executeDelete = () => {
-        if (!deleteModal.category) return;
+        if (!deleteModal.category) {
+return;
+}
 
         destroy(`/admin/categories/${deleteModal.category.id}`, {
             preserveScroll: true,
@@ -138,14 +149,26 @@ export default function Index({ auth, categories }: Props) {
     const handleQuickAddSub = (parentId: number) => {
         cancelEdit();
         setData('parent_id', parentId.toString());
-        if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        if (formRef.current) {
+formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
     };
 
     const toggleNode = (id: number, forceExpand = false) => {
         setExpandedNodes(prev => {
             const newSet = new Set(prev);
-            if (forceExpand) newSet.add(id);
-            else newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+
+            if (forceExpand) {
+newSet.add(id);
+} else {
+if (newSet.has(id)) {
+                    newSet.delete(id);
+                } else {
+                    newSet.add(id);
+                }
+}
+
             return newSet;
         });
     };
@@ -153,10 +176,12 @@ export default function Index({ auth, categories }: Props) {
     const flattenCategories = (cats: Category[], level = 0, result: any[] = []) => {
         cats.forEach(cat => {
             result.push({ id: cat.id, name: cat.name, level, image_path: cat.image_path });
+
             if (cat.all_children && cat.all_children.length > 0) {
                 flattenCategories(cat.all_children, level + 1, result);
             }
         });
+
         return result;
     };
 
@@ -357,7 +382,9 @@ export default function Index({ auth, categories }: Props) {
                                         <div className="max-h-60 overflow-y-auto p-2 space-y-1">
                                             <button
                                                 type="button"
-                                                onClick={() => { setData('parent_id', ''); setIsDropdownOpen(false); setSearchCategory(''); }}
+                                                onClick={() => {
+ setData('parent_id', ''); setIsDropdownOpen(false); setSearchCategory(''); 
+}}
                                                 className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-800 rounded-xl font-bold transition-colors"
                                             >
                                                 -- Tidak ada (Jadikan Kategori Utama) --
@@ -370,7 +397,9 @@ export default function Index({ auth, categories }: Props) {
                                                     <button
                                                         key={cat.id}
                                                         type="button"
-                                                        onClick={() => { setData('parent_id', cat.id.toString()); setIsDropdownOpen(false); setSearchCategory(''); }}
+                                                        onClick={() => {
+ setData('parent_id', cat.id.toString()); setIsDropdownOpen(false); setSearchCategory(''); 
+}}
                                                         className="w-full text-left px-4 py-3 text-sm hover:bg-gray-800 rounded-xl flex items-center gap-3 transition-colors"
                                                     >
                                                         {cat.level > 0 && <span className="text-gray-600 font-black opacity-50">{'—'.repeat(cat.level)}</span>}

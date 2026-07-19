@@ -1,5 +1,6 @@
-import { useEffect, FormEventHandler } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
+import type { FormEventHandler } from 'react';
+import { useEffect } from 'react';
 
 interface Props {
     canResetPassword?: boolean;

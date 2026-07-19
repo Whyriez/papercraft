@@ -1,6 +1,6 @@
-import Navbar from '@/Components/Navbar';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
+import Navbar from '@/Components/Navbar';
 
 // === TYPE DEFINITIONS ===
 interface Category {
@@ -55,9 +55,11 @@ interface Props {
 
 const buildCategoryHref = (slug: string, searchQuery?: string): string => {
     const params = new URLSearchParams({ category: slug });
+
     if (searchQuery) {
         params.set('search', searchQuery);
     }
+
     return `/?${params.toString()}#filtered-view`;
 };
 
@@ -65,16 +67,19 @@ const buildCategoryHref = (slug: string, searchQuery?: string): string => {
 const BannerSlider = ({ banners }: { banners: any[] }) => {
     const [current, setCurrent] = useState(0);
 
-    // Fallback jika Admin belum menambahkan banner sama sekali
     const slides = banners.length > 0 ? banners : [
-        { id: 991, type: 'custom', title: 'Galeri Preview Papercraft Terbaik', image_path: null, link_url: null },
+        { id: 991, type: 'custom', title: 'Best Papercraft Preview Gallery', image_path: null, link_url: null },
     ];
 
     useEffect(() => {
-        if (slides.length <= 1) return;
+        if (slides.length <= 1) {
+return;
+}
+
         const timer = setInterval(() => {
             setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
         }, 5000);
+
         return () => clearInterval(timer);
     }, [slides.length]);
 
@@ -91,6 +96,7 @@ const BannerSlider = ({ banners }: { banners: any[] }) => {
                 const badgeName = isCustom ? 'Preview' : slide.papercraft?.category?.name;
 
                 const imgPath = rawImgPath ? (rawImgPath.startsWith('storage/') ? `/${rawImgPath}` : `/storage/${rawImgPath}`) : null;
+
                 return (
                     <div
                         key={slide.id}
@@ -117,7 +123,7 @@ const BannerSlider = ({ banners }: { banners: any[] }) => {
                                 </h2>
                                 {linkDest && (
                                     <Link href={linkDest} className="mt-8 inline-flex items-center justify-center gap-3 rounded-full bg-gray-200 px-8 py-3.5 text-sm font-bold text-gray-900 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white">
-                                        {isCustom ? 'Kunjungi Tautan' : 'Lihat Preview'}
+                                        {isCustom ? 'Visit Link' : 'View Preview'}
                                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                         </svg>
@@ -175,7 +181,7 @@ const CategoryCard = ({ category, searchQuery = '' }: { category: Category; sear
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${hasImage ? 'text-gray-300' : 'text-gray-400'}`}>
-                            Kategori
+                            Category
                         </p>
                         <h3 className={`mt-2 text-2xl font-black ${hasImage ? 'text-white drop-shadow-md' : 'text-gray-100'}`}>
                             {category.name}
@@ -189,7 +195,7 @@ const CategoryCard = ({ category, searchQuery = '' }: { category: Category; sear
                 </div>
 
                 <div className={`mt-6 flex items-center justify-between border-t pt-4 text-sm font-semibold ${hasImage ? 'border-white/20 text-gray-200' : 'border-gray-800 text-gray-400'}`}>
-                    <span>{hasChildren ? 'Lihat Sub-Kategori' : 'Lihat Koleksi'}</span>
+                    <span>{hasChildren ? 'View Sub-Categories' : 'View Collection'}</span>
                     <svg className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
@@ -247,7 +253,7 @@ const PapercraftCard = ({ item }: { item: Papercraft }) => {
                     </div>
 
                     <div className="mt-auto flex items-center justify-between border-t border-gray-800 pt-4 text-sm font-semibold text-gray-400">
-                        <span className="group-hover:text-gray-200 transition-colors">Lihat Detail</span>
+                        <span className="group-hover:text-gray-200 transition-colors">View Details</span>
                         <svg className="h-5 w-5 text-gray-500 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
@@ -291,7 +297,7 @@ const SectionHeading = ({
 
 // === HALAMAN UTAMA ===
 export default function Home({ categories, filters, isFiltered, activeCategory, papercrafts, latestPapercrafts, banners = [], settings }: Props) {
-    const pageTitle = activeCategory ? activeCategory.name : 'Galeri Papercraft';
+    const pageTitle = activeCategory ? activeCategory.name : 'Papercraft Gallery';
     const featuredModels = latestPapercrafts ?? [];
     const quickCategories = categories.slice(0, 6);
 
@@ -335,7 +341,7 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                 <section className="mt-8 flex flex-wrap justify-center gap-3">
                     {/* PERBAIKAN: Tombol "Semua Kategori" sekarang diarahkan ke #categories dan mereset url param */}
                     <Link href="/#categories" className={`rounded-full border px-5 py-2.5 text-sm font-bold transition-all shadow-sm ${isAllCategoriesActive ? 'border-gray-500 bg-gray-800 text-white' : 'border-gray-800 bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-gray-200 hover:-translate-y-0.5'}`}>
-                        Semua Kategori
+                        All Categories
                     </Link>
                     {quickCategories.map((category) => (
                         <Link
@@ -351,14 +357,14 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                 {isFiltered ? (
                     <section id="filtered-view" className="mt-20 scroll-mt-24">
                         <SectionHeading
-                            eyebrow={showSubcategories ? "Sub-Kategori" : "Koleksi Template"}
-                            title={filters.search ? `Pencarian: "${filters.search}"` : activeCategory?.name || 'Kategori Pilihan'}
+                            eyebrow={showSubcategories ? "Sub-Categories" : "Template Collection"}
+                            title={filters.search ? `Search: "${filters.search}"` : activeCategory?.name || 'Featured Categories'}
                             description={
                                 showSubcategories
-                                    ? `Pilih sub-kategori di dalam ${activeCategory?.name} untuk melihat koleksi spesifik.`
-                                    : `Menampilkan ${papercrafts?.total ?? 0} preview papercraft untuk dilihat.`
+                                    ? `Select a sub-category in ${activeCategory?.name} to view specific collections.`
+                                    : `Showing ${papercrafts?.total ?? 0} papercraft previews.`
                             }
-                            action={{ href: '/#categories', label: 'Kembali' }}
+                            action={{ href: '/#categories', label: 'Back' }}
                         />
 
                         {showSubcategories ? (
@@ -371,8 +377,8 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                             <div className="mt-8">
                                 {papercrafts?.data.length === 0 ? (
                                     <div className="rounded-[34px] border border-dashed border-gray-700 bg-gray-800 px-6 py-20 text-center shadow-sm">
-                                        <p className="text-lg font-extrabold text-gray-100">Tidak ada hasil ditemukan.</p>
-                                        <p className="mt-3 text-sm leading-7 text-gray-400">Coba ubah kata kunci atau kembali untuk melihat koleksi lainnya.</p>
+                                        <p className="text-lg font-extrabold text-gray-100">No results found.</p>
+                                        <p className="mt-3 text-sm leading-7 text-gray-400">Try changing keywords or go back to see other collections.</p>
                                         <button
                                             onClick={handleReset}
                                             className="mt-6 inline-flex items-center justify-center rounded-full bg-gray-200 px-6 py-3 text-sm font-bold text-gray-900 shadow-md transition-all hover:-translate-y-0.5 hover:bg-white"
@@ -415,9 +421,9 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                         <section id="categories" className="mt-20 scroll-mt-24">
                             {/* PERBAIKAN: Deskripsi Kategori disesuaikan dengan konteks Barter */}
                             <SectionHeading
-                                eyebrow="Kategori Template"
-                                title="Eksplorasi Koleksi Papercraft"
-                                description="Jelajahi galeri preview kami berdasarkan kategori. Temukan model papercraft favoritmu di sini."
+                                eyebrow="Template Categories"
+                                title="Explore Papercraft Collection"
+                                description="Browse our preview gallery by category. Find your favorite papercraft models here."
                             />
 
                             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -430,9 +436,9 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                         <section id="featured" className="mt-20">
                             {/* PERBAIKAN: Deskripsi Featured Models disesuaikan */}
                             <SectionHeading
-                                eyebrow="Model Pilihan"
-                                title="Preview Template Terpopuler"
-                                description="Beberapa koleksi preview papercraft pilihan yang menarik. Lihat detail dan bentuknya sebelum kamu memutuskan untuk berkolaborasi."
+                                eyebrow="Featured Models"
+                                title="Most Popular Template Previews"
+                                description="Some interesting featured papercraft preview collections. See the details before you decide to trade."
                             />
 
                             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -448,11 +454,11 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                     <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
                         <div className="max-w-xl">
                             <span className="inline-flex items-center gap-2 rounded-full border border-gray-700 bg-gray-800 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-gray-400 shadow-sm">
-                                Tertarik & Ingin Barter?
+                                Interested & Want to Trade?
                             </span>
                             {/* PERBAIKAN: Copywriting Call To Action difokuskan untuk "Barter" */}
-                            <h2 className="mt-5 text-3xl font-black text-gray-100 sm:text-4xl">Mari Berdiskusi dan Bertukar Template!</h2>
-                            <p className="mt-4 text-base leading-7 text-gray-400">Website ini didedikasikan sebagai galeri preview. Kalau kamu melihat template yang menarik dan ingin melakukan barter (tukar template), langsung saja hubungi saya lewat kontak di bawah ini!</p>
+                            <h2 className="mt-5 text-3xl font-black text-gray-100 sm:text-4xl">Let's Discuss and Trade Templates!</h2>
+                            <p className="mt-4 text-base leading-7 text-gray-400">This website is dedicated as a preview gallery. If you see an interesting template and want to trade, just contact me via the details below!</p>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-4 lg:justify-end">
@@ -465,7 +471,7 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
-                                    Email Saya
+                                    Email Me
                                 </a>
                             )}
 

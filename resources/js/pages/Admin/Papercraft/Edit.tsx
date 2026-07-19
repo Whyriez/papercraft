@@ -1,6 +1,7 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import { FormEventHandler, useState } from 'react';
+import type { FormEventHandler} from 'react';
+import { useState } from 'react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 // Tipe Data
 interface Category {
@@ -32,7 +33,7 @@ interface Props {
     errors: any;
 }
 
-export default function Edit({ auth, categories, papercraft, errors: serverErrors }: Props) {
+export default function Edit({ auth, categories, papercraft, errors: _serverErrors }: Props) {
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         _method: 'PUT',
         title: papercraft.title,
@@ -106,7 +107,9 @@ export default function Edit({ auth, categories, papercraft, errors: serverError
             .filter(key => key.startsWith('images.'))
             .map(key => errors[key as keyof typeof errors]);
 
-        if (imageErrors.length === 0 && !errors.images) return null;
+        if (imageErrors.length === 0 && !errors.images) {
+return null;
+}
 
         return (
             <div className="mt-4 text-xs font-bold text-red-400 bg-red-900/30 p-4 rounded-xl border border-red-800/50 shadow-sm">

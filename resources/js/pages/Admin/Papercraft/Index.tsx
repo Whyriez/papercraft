@@ -1,6 +1,6 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 // 1. Tipe Data (TypeScript Interfaces)
 interface PaginationLink {
@@ -55,9 +55,23 @@ export default function Index({ auth, papercrafts, categories, filters }: Props)
     const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean, id: number | null }>({ isOpen: false, id: null });
 
     // Efek untuk memunculkan toast dari flash message backend
+    const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+        setToast({ show: true, message, type });
+        setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 4000);
+    };
+
     useEffect(() => {
-        if (flash?.success) showToast(flash.success, 'success');
-        if (flash?.error) showToast(flash.error, 'error');
+        if (flash?.success) {
+const to1 = setTimeout(() => showToast(flash.success, 'success'), 0);
+
+ return () => clearTimeout(to1);
+}
+
+        if (flash?.error) {
+const to2 = setTimeout(() => showToast(flash.error, 'error'), 0);
+
+ return () => clearTimeout(to2);
+}
     }, [flash]);
 
     // Efek Trigger Filtering (Debounce 300ms untuk mencegah query beruntun saat mengetik)
@@ -73,17 +87,15 @@ export default function Index({ auth, papercrafts, categories, filters }: Props)
         return () => clearTimeout(delayDebounceFn);
     }, [searchTerm, categoryId, status]);
 
-    const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-        setToast({ show: true, message, type });
-        setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 4000);
-    };
-
     const confirmDelete = (id: number) => {
         setDeleteModal({ isOpen: true, id });
     };
 
     const executeDelete = () => {
-        if (!deleteModal.id) return;
+        if (!deleteModal.id) {
+return;
+}
+
         destroy(`/admin/papercrafts/${deleteModal.id}`, {
             preserveScroll: true,
             onSuccess: () => {
@@ -102,22 +114,29 @@ export default function Index({ auth, papercrafts, categories, filters }: Props)
                     {prefix}{cat.name}
                 </option>
             );
+
             if (cat.all_children && cat.all_children.length > 0) {
                 options = options.concat(renderCategoryOptions(cat.all_children, level + 1));
             }
         });
+
         return options;
     };
 
     // Fungsi Menggambar Breadcrumb Kategori pada Tabel (Misal: "Main Kategori — Sub Kategori")
     const renderCategoryBreadcrumb = (category: Category | undefined) => {
-        if (!category) return 'Tanpa Kategori';
+        if (!category) {
+return 'Tanpa Kategori';
+}
+
         let breadcrumb = category.name;
         let current = category;
+
         while (current.parent) {
             breadcrumb = `${current.parent.name} — ${breadcrumb}`;
             current = current.parent;
         }
+
         return breadcrumb;
     };
 
