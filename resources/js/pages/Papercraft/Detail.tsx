@@ -81,15 +81,15 @@ export default function Detail({ papercraft, related = [] }: Props) {
 
             <div className="max-w-7xl mx-auto px-6 pt-8">
 
-                {/* 🌟 BREADCRUMB DINAMIS (Menampilkan Silsilah Lengkap) */}
+                {/* 🌟 BREADCRUMB DINAMIS (Bisa Diklik & Filter Berdasarkan Slug) */}
                 <nav className="flex flex-wrap items-center text-sm text-gray-500 mb-8 font-medium gap-y-2">
                     <Link href="/" className="hover:text-indigo-600 transition">Home</Link>
 
                     {categoryPath.map((cat) => (
                         <div key={cat.id} className="flex items-center">
                             <span className="mx-2 text-gray-300">/</span>
-                            {/* NOTE: Nanti kita bisa aktifkan fitur klik kategori ke Home */}
-                            <Link href={`/?search=&category=${cat.id}`} className="hover:text-indigo-600 transition cursor-pointer">
+                            {/* NOTE: Diubah menjadi memanggil cat.slug */}
+                            <Link href={`/?category=${cat.slug}`} className="hover:text-indigo-600 transition cursor-pointer">
                                 {cat.name}
                             </Link>
                         </div>
@@ -132,7 +132,6 @@ export default function Detail({ papercraft, related = [] }: Props) {
                                 {/* 🌟 BADGE KATEGORI LENGKAP */}
                                 <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-600 text-[11px] font-bold uppercase tracking-widest rounded-lg mb-4 border border-indigo-100/50">
                                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-600"></div>
-                                    {/* Akan tampil: Cosplay • Helmet • Animal */}
                                     {categoryPath.map(c => c.name).join(' • ')}
                                 </span>
 
@@ -156,11 +155,10 @@ export default function Detail({ papercraft, related = [] }: Props) {
                                         </p>
                                     </div>
 
-                                    {/* 🌟 KITA TAMBAH INFO KATEGORI UTAMA DI METADATA */}
                                     <div>
                                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Kategori Utama</p>
                                         <p className="font-semibold text-gray-900">
-                                            {categoryPath[0].name}
+                                            {categoryPath[0]?.name || '-'}
                                         </p>
                                     </div>
                                 </div>
@@ -200,9 +198,9 @@ export default function Detail({ papercraft, related = [] }: Props) {
 
                     </div>
                 </div>
-                
+
             </div>
-{related.length > 0 && (
+            {related.length > 0 && (
                 <div className="max-w-7xl mx-auto px-6 mt-16">
                     <h3 className="text-2xl font-black text-gray-900 mb-8">Papercraft Lainnya di {papercraft.category.name}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -233,7 +231,7 @@ export default function Detail({ papercraft, related = [] }: Props) {
                     </div>
                 </div>
             )}
-            
+
         </div>
     );
 }
