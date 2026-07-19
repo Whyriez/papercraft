@@ -13,7 +13,7 @@ class FrontController extends Controller
     {
         // Ambil kategori beserta childnya untuk sidebar
         $categories = Category::whereNull('parent_id')->with('children.children')->get();
-        
+
         // Cek apakah user mem-filter data
         $isFiltered = $request->filled('search') || $request->filled('category') || $request->filled('all');
 
@@ -21,6 +21,7 @@ class FrontController extends Controller
             'categories' => $categories,
             'filters' => $request->only(['search', 'category', 'all']),
             'isFiltered' => $isFiltered,
+            'banners' => \App\Models\Banner::with('papercraft.primaryImage', 'papercraft.category')->latest()->get(),
         ];
 
         if ($isFiltered) {
@@ -37,7 +38,7 @@ class FrontController extends Controller
                 $matchedCategories = Category::with('children.children')
                     ->where('name', 'like', '%' . $searchTerm . '%')
                     ->get();
-                
+
                 // 2. Kumpulkan semua ID kategori tersebut beserta turunannya
                 $searchCategoryIds = [];
                 foreach ($matchedCategories as $cat) {
@@ -53,7 +54,7 @@ class FrontController extends Controller
                 // 3. Terapkan filter: Cari di Judul ATAU di ID Kategori yang cocok
                 $query->where(function ($q) use ($searchTerm, $searchCategoryIds) {
                     $q->where('title', 'like', '%' . $searchTerm . '%');
-                    
+
                     if (!empty($searchCategoryIds)) {
                         $q->orWhereIn('category_id', $searchCategoryIds);
                     }
@@ -65,10 +66,10 @@ class FrontController extends Controller
             // ==========================================
             if ($request->filled('category')) {
                 $category = Category::with('children.children')->where('slug', $request->category)->firstOrFail();
-                $payload['activeCategory'] = $category; 
-                
+                $payload['activeCategory'] = $category;
+
                 $categoryIds = [$category->id];
-                
+
                 foreach ($category->children as $child) {
                     $categoryIds[] = $child->id;
                     foreach ($child->children as $grandchild) {
@@ -81,10 +82,9 @@ class FrontController extends Controller
 
             // Gunakan pagination
             $payload['papercrafts'] = $query->latest()->paginate(12)->withQueryString();
-            
         } else {
             // MODE 2: HALAMAN AWAL DEFAULT (SHOWCASE TANPA PAGINATION)
-            
+
             $payload['latestPapercrafts'] = Papercraft::with(['primaryImage', 'category'])
                 ->where('is_published', true)
                 ->latest()
@@ -96,7 +96,7 @@ class FrontController extends Controller
                     $q->where('is_published', true)->latest()->limit(4);
                 }, 'papercrafts.primaryImage', 'papercrafts.category'])
                 ->get()
-                ->filter(fn($cat) => $cat->papercrafts->isNotEmpty()) 
+                ->filter(fn($cat) => $cat->papercrafts->isNotEmpty())
                 ->values();
         }
 
