@@ -79,43 +79,44 @@ const BannerSlider = ({ banners }: { banners: any[] }) => {
     }, [slides.length]);
 
     return (
-        <div className="relative w-full h-[400px] sm:h-[480px] lg:h-[540px] overflow-hidden rounded-[36px] shadow-[0_20px_50px_rgba(82,59,40,0.09)] border border-[#eadfce]">
+        <div className="relative w-full h-[400px] sm:h-[480px] lg:h-[540px] overflow-hidden rounded-[36px] shadow-lg shadow-black/20 border border-gray-800">
             {slides.map((slide, index) => {
                 const isActive = index === current;
                 const isCustom = slide.type === 'custom';
 
                 // Logika Pembacaan Data Fleksibel
                 const title = isCustom ? slide.title : slide.papercraft?.title;
-                const imgPath = isCustom ? slide.image_path : (slide.papercraft?.primaryImage?.image_path ?? slide.papercraft?.primary_image?.image_path);
+                const rawImgPath = isCustom ? slide.image_path : (slide.papercraft?.primaryImage?.image_path ?? slide.papercraft?.primary_image?.image_path);
                 const linkDest = isCustom ? slide.link_url : (slide.papercraft ? `/papercraft/${slide.papercraft.slug}` : null);
                 const badgeName = isCustom ? 'Preview' : slide.papercraft?.category?.name;
 
+                const imgPath = rawImgPath ? (rawImgPath.startsWith('storage/') ? `/${rawImgPath}` : `/storage/${rawImgPath}`) : null;
                 return (
                     <div
                         key={slide.id}
                         className={`absolute inset-0 transition-all duration-1000 ease-in-out ${isActive ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 z-0'}`}
                     >
-                        <div className="absolute inset-0 bg-[#f3eadc]">
+                        <div className="absolute inset-0 bg-gray-900">
                             {imgPath ? (
-                                <img src={`/storage/${imgPath}`} alt={title} className="w-full h-full object-cover" />
+                                <img src={imgPath} alt={title} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(201,119,88,0.4),transparent_50%),radial-gradient(circle_at_bottom_left,rgba(169,199,163,0.4),transparent_50%)] bg-[#e9d3bf]"></div>
+                                <div className="w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(75,85,99,0.4),transparent_50%),radial-gradient(circle_at_bottom_left,rgba(55,65,81,0.4),transparent_50%)] bg-gray-900"></div>
                             )}
                         </div>
 
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#2f2f2f]/90 via-[#2f2f2f]/30 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-gray-950/30 to-transparent" />
 
                         <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 lg:p-16 text-white">
                             <div className={`transform transition-all duration-700 delay-200 ${isActive ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-                                <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-white shadow-sm mb-4">
-                                    <span className="h-1.5 w-1.5 rounded-full bg-[#c97758]" />
+                                <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 backdrop-blur-md px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-gray-200 shadow-sm mb-4">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
                                     {badgeName || 'Update'}
                                 </span>
                                 <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-md line-clamp-2 max-w-4xl leading-tight">
                                     {title}
                                 </h2>
                                 {linkDest && (
-                                    <Link href={linkDest} className="mt-8 inline-flex items-center justify-center gap-3 rounded-full bg-[#c97758] px-8 py-3.5 text-sm font-bold text-white shadow-[0_14px_28px_rgba(201,119,88,0.22)] transition-all hover:-translate-y-0.5 hover:bg-[#b96449]">
+                                    <Link href={linkDest} className="mt-8 inline-flex items-center justify-center gap-3 rounded-full bg-gray-200 px-8 py-3.5 text-sm font-bold text-gray-900 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white">
                                         {isCustom ? 'Kunjungi Tautan' : 'Lihat Preview'}
                                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -134,7 +135,7 @@ const BannerSlider = ({ banners }: { banners: any[] }) => {
                         <button
                             key={idx}
                             onClick={() => setCurrent(idx)}
-                            className={`h-2.5 rounded-full transition-all duration-500 ${idx === current ? 'w-10 bg-[#c97758]' : 'w-2.5 bg-white/40 hover:bg-white/80'}`}
+                            className={`h-2.5 rounded-full transition-all duration-500 ${idx === current ? 'w-10 bg-gray-300' : 'w-2.5 bg-white/30 hover:bg-white/60'}`}
                             aria-label={`Go to slide ${idx + 1}`}
                         />
                     ))}
@@ -152,10 +153,10 @@ const CategoryCard = ({ category, searchQuery = '' }: { category: Category; sear
     return (
         <Link
             href={buildCategoryHref(category.slug, searchQuery)}
-            className="group relative overflow-hidden rounded-[28px] border border-[#eadfce] bg-[#fcfaf6] p-6 shadow-[0_18px_40px_rgba(82,59,40,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(82,59,40,0.12)] min-h-[160px] flex flex-col justify-between"
+            className="group relative overflow-hidden rounded-[28px] border border-gray-800 bg-gray-900 p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl min-h-[160px] flex flex-col justify-between"
         >
-            <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-[28px] bg-[#f1dfc8] opacity-80 transition-transform duration-300 group-hover:translate-x-3 group-hover:translate-y-3" />
-            <div className="absolute inset-0 translate-x-1 translate-y-1 rounded-[28px] bg-[#f8eedf] opacity-90 transition-transform duration-300 group-hover:translate-x-2 group-hover:translate-y-2" />
+            <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-[28px] bg-gray-800 opacity-80 transition-transform duration-300 group-hover:translate-x-3 group-hover:translate-y-3" />
+            <div className="absolute inset-0 translate-x-1 translate-y-1 rounded-[28px] bg-gray-700 opacity-50 transition-transform duration-300 group-hover:translate-x-2 group-hover:translate-y-2" />
 
             {hasImage ? (
                 <>
@@ -164,30 +165,30 @@ const CategoryCard = ({ category, searchQuery = '' }: { category: Category; sear
                         alt={category.name}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 rounded-[28px]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 rounded-[28px]" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-gray-950/40 to-gray-950/10 rounded-[28px]" />
                 </>
             ) : (
-                <div className="absolute inset-0 bg-[#fcfaf6] rounded-[28px]" />
+                <div className="absolute inset-0 bg-gray-900 rounded-[28px]" />
             )}
 
             <div className="relative h-full flex flex-col justify-between z-10">
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${hasImage ? 'text-white/80' : 'text-[#a97b5b]'}`}>
+                        <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${hasImage ? 'text-gray-300' : 'text-gray-400'}`}>
                             Kategori
                         </p>
-                        <h3 className={`mt-2 text-2xl font-black ${hasImage ? 'text-white drop-shadow-md' : 'text-[#2f2f2f]'}`}>
+                        <h3 className={`mt-2 text-2xl font-black ${hasImage ? 'text-white drop-shadow-md' : 'text-gray-100'}`}>
                             {category.name}
                         </h3>
                     </div>
                     {hasChildren && (
-                        <div className={`flex shrink-0 h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl text-sm font-black shadow-sm ${hasImage ? 'bg-white/20 backdrop-blur-md text-white border border-white/30' : 'bg-[#a9c7a3] text-[#2f2f2f]'}`}>
+                        <div className={`flex shrink-0 h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl text-sm font-black shadow-sm ${hasImage ? 'bg-black/30 backdrop-blur-md text-white border border-white/20' : 'bg-gray-800 border border-gray-700 text-gray-300'}`}>
                             {String(category.children!.length).padStart(2, '0')}
                         </div>
                     )}
                 </div>
 
-                <div className={`mt-6 flex items-center justify-between border-t pt-4 text-sm font-semibold ${hasImage ? 'border-white/20 text-white' : 'border-[#efe4d6] text-[#67574b]'}`}>
+                <div className={`mt-6 flex items-center justify-between border-t pt-4 text-sm font-semibold ${hasImage ? 'border-white/20 text-gray-200' : 'border-gray-800 text-gray-400'}`}>
                     <span>{hasChildren ? 'Lihat Sub-Kategori' : 'Lihat Koleksi'}</span>
                     <svg className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -205,13 +206,13 @@ const PapercraftCard = ({ item }: { item: Papercraft }) => {
     return (
         <Link
             href={`/papercraft/${item.slug}`}
-            className="group relative flex flex-col overflow-hidden rounded-[30px] border border-[#eadfce] bg-[#fcfaf6] shadow-[0_18px_45px_rgba(82,59,40,0.10)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(82,59,40,0.16)]"
+            className="group relative flex flex-col overflow-hidden rounded-[30px] border border-gray-800 bg-gray-900 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
         >
-            <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-[30px] bg-[#ead6c2] opacity-70 transition-transform duration-300 group-hover:translate-x-3 group-hover:translate-y-3" />
-            <div className="absolute inset-0 translate-x-1 translate-y-1 rounded-[30px] bg-[#f4e7d4] opacity-90 transition-transform duration-300 group-hover:translate-x-2 group-hover:translate-y-2" />
+            <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-[30px] bg-gray-800 opacity-70 transition-transform duration-300 group-hover:translate-x-3 group-hover:translate-y-3" />
+            <div className="absolute inset-0 translate-x-1 translate-y-1 rounded-[30px] bg-gray-700 opacity-40 transition-transform duration-300 group-hover:translate-x-2 group-hover:translate-y-2" />
 
-            <div className="relative rounded-[30px] bg-[#fcfaf6]">
-                <div className="relative aspect-4/3 overflow-hidden rounded-t-[30px] bg-[#f3eadc]">
+            <div className="relative rounded-[30px] bg-gray-900">
+                <div className="relative aspect-4/3 overflow-hidden rounded-t-[30px] bg-gray-800 border-b border-gray-800">
                     {coverImage ? (
                         <img
                             src={`/${coverImage.image_path}`}
@@ -219,7 +220,7 @@ const PapercraftCard = ({ item }: { item: Papercraft }) => {
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                     ) : (
-                        <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-[#8d7c6d]">
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-gray-600">
                             <svg className="h-11 w-11 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
@@ -227,10 +228,10 @@ const PapercraftCard = ({ item }: { item: Papercraft }) => {
                         </div>
                     )}
 
-                    <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(47,47,47,0.38),rgba(47,47,47,0.02))] opacity-80" />
+                    <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(17,24,39,0.7),rgba(17,24,39,0.02))] opacity-80" />
 
-                    <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/60 bg-[#fcfaf6]/92 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#6b5a4c] shadow-[0_10px_20px_rgba(82,59,40,0.08)]">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#c97758]" />
+                    <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-gray-600 bg-gray-900/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-300 shadow-sm">
+                        <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
                         Preview
                     </div>
                 </div>
@@ -238,16 +239,16 @@ const PapercraftCard = ({ item }: { item: Papercraft }) => {
                 <div className="relative flex flex-1 flex-col gap-4 p-6 pt-5">
                     <div className="flex items-start justify-between gap-4">
                         <div>
-                            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#a97b5b]">{item.category?.name}</p>
-                            <h3 className="mt-2 line-clamp-2 text-lg font-extrabold leading-snug text-[#2f2f2f] transition-colors group-hover:text-[#c97758]">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gray-400">{item.category?.name}</p>
+                            <h3 className="mt-2 line-clamp-2 text-lg font-extrabold leading-snug text-gray-100 transition-colors group-hover:text-white">
                                 {item.title}
                             </h3>
                         </div>
                     </div>
 
-                    <div className="mt-auto flex items-center justify-between border-t border-[#efe4d6] pt-4 text-sm font-semibold text-[#7f6e5e]">
-                        <span>Lihat Detail</span>
-                        <svg className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="mt-auto flex items-center justify-between border-t border-gray-800 pt-4 text-sm font-semibold text-gray-400">
+                        <span className="group-hover:text-gray-200 transition-colors">Lihat Detail</span>
+                        <svg className="h-5 w-5 text-gray-500 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </div>
@@ -270,17 +271,17 @@ const SectionHeading = ({
 }) => (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#eadfce] bg-[#fcfaf6] px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-[#a97b5b] shadow-[0_10px_20px_rgba(82,59,40,0.06)]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-gray-700 bg-gray-800 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-gray-400 shadow-sm">
                 {eyebrow}
             </span>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-[#2f2f2f] sm:text-4xl">{title}</h2>
-            {description && <p className="mt-4 max-w-xl text-base leading-7 text-[#67574b]">{description}</p>}
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-gray-100 sm:text-4xl">{title}</h2>
+            {description && <p className="mt-4 max-w-xl text-base leading-7 text-gray-400">{description}</p>}
         </div>
 
         {action && (
             <Link
                 href={action.href}
-                className="inline-flex items-center justify-center rounded-full border border-[#eadfce] bg-[#fcfaf6] px-5 py-3 text-sm font-bold text-[#2f2f2f] shadow-[0_10px_20px_rgba(82,59,40,0.06)] transition-all hover:-translate-y-0.5 hover:border-[#d9c8b0] hover:bg-white"
+                className="inline-flex items-center justify-center rounded-full border border-gray-700 bg-gray-800 px-5 py-3 text-sm font-bold text-gray-200 shadow-sm transition-all hover:-translate-y-0.5 hover:border-gray-500 hover:bg-gray-700"
             >
                 {action.label}
             </Link>
@@ -307,18 +308,18 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
 
     return (
         <div
-            className="min-h-screen overflow-hidden bg-[#fcfaf6] font-sans text-[#2f2f2f] selection:bg-[#c97758] selection:text-white"
+            className="min-h-screen overflow-hidden bg-gray-950 font-sans text-gray-200 selection:bg-gray-700 selection:text-white"
             style={{
                 backgroundImage:
-                    'radial-gradient(circle at top left, rgba(233, 211, 191, 0.55), transparent 36%), radial-gradient(circle at 85% 12%, rgba(169, 199, 163, 0.32), transparent 28%), radial-gradient(circle at 15% 72%, rgba(230, 185, 91, 0.18), transparent 30%), linear-gradient(rgba(47, 47, 47, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(47, 47, 47, 0.02) 1px, transparent 1px)',
+                    'radial-gradient(circle at top left, rgba(55, 65, 81, 0.4), transparent 36%), radial-gradient(circle at 85% 12%, rgba(75, 85, 99, 0.2), transparent 28%), radial-gradient(circle at 15% 72%, rgba(31, 41, 55, 0.4), transparent 30%), linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
                 backgroundSize: '100% 100%, 100% 100%, 100% 100%, 42px 42px, 42px 42px',
             }}
         >
             <Head title={`PaperCraft | ${pageTitle}`} />
 
-            <div className="pointer-events-none absolute inset-0 opacity-60">
-                <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-[#a9c7a3]/20 blur-3xl" />
-                <div className="absolute left-0 top-40 h-80 w-80 rounded-full bg-[#e6b95b]/20 blur-3xl" />
+            <div className="pointer-events-none absolute inset-0 opacity-40">
+                <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-gray-700/20 blur-3xl" />
+                <div className="absolute left-0 top-40 h-80 w-80 rounded-full bg-gray-600/10 blur-3xl" />
             </div>
 
             <Navbar initialSearch={searchQuery} />
@@ -333,14 +334,14 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                 {/* 🌟 QUICK CATEGORIES (Di bawah banner) 🌟 */}
                 <section className="mt-8 flex flex-wrap justify-center gap-3">
                     {/* PERBAIKAN: Tombol "Semua Kategori" sekarang diarahkan ke #categories dan mereset url param */}
-                    <Link href="/#categories" className={`rounded-full border px-5 py-2.5 text-sm font-bold transition-all shadow-[0_10px_20px_rgba(82,59,40,0.03)] ${isAllCategoriesActive ? 'border-[#c97758] bg-[#f8e4db] text-[#c97758]' : 'border-[#eadfce] bg-[#fcfaf6] text-[#67574b] hover:bg-white hover:-translate-y-0.5'}`}>
+                    <Link href="/#categories" className={`rounded-full border px-5 py-2.5 text-sm font-bold transition-all shadow-sm ${isAllCategoriesActive ? 'border-gray-500 bg-gray-800 text-white' : 'border-gray-800 bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-gray-200 hover:-translate-y-0.5'}`}>
                         Semua Kategori
                     </Link>
                     {quickCategories.map((category) => (
                         <Link
                             key={category.id}
                             href={buildCategoryHref(category.slug)}
-                            className={`rounded-full border px-5 py-2.5 text-sm font-bold transition-all shadow-[0_10px_20px_rgba(82,59,40,0.03)] ${filters.category === category.slug ? 'border-[#c97758] bg-[#f8e4db] text-[#c97758]' : 'border-[#eadfce] bg-[#fcfaf6] text-[#67574b] hover:bg-white hover:-translate-y-0.5'}`}
+                            className={`rounded-full border px-5 py-2.5 text-sm font-bold transition-all shadow-sm ${filters.category === category.slug ? 'border-gray-500 bg-gray-800 text-white' : 'border-gray-800 bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-gray-200 hover:-translate-y-0.5'}`}
                         >
                             {category.name}
                         </Link>
@@ -369,12 +370,12 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                         ) : (
                             <div className="mt-8">
                                 {papercrafts?.data.length === 0 ? (
-                                    <div className="rounded-[34px] border border-dashed border-[#d9c8b0] bg-[#fcfaf6] px-6 py-20 text-center shadow-[0_18px_40px_rgba(82,59,40,0.05)]">
-                                        <p className="text-lg font-extrabold text-[#2f2f2f]">Tidak ada hasil ditemukan.</p>
-                                        <p className="mt-3 text-sm leading-7 text-[#67574b]">Coba ubah kata kunci atau kembali untuk melihat koleksi lainnya.</p>
+                                    <div className="rounded-[34px] border border-dashed border-gray-700 bg-gray-800 px-6 py-20 text-center shadow-sm">
+                                        <p className="text-lg font-extrabold text-gray-100">Tidak ada hasil ditemukan.</p>
+                                        <p className="mt-3 text-sm leading-7 text-gray-400">Coba ubah kata kunci atau kembali untuk melihat koleksi lainnya.</p>
                                         <button
                                             onClick={handleReset}
-                                            className="mt-6 inline-flex items-center justify-center rounded-full bg-[#c97758] px-6 py-3 text-sm font-bold text-white shadow-[0_14px_28px_rgba(201,119,88,0.22)] transition-all hover:-translate-y-0.5 hover:bg-[#b96449]"
+                                            className="mt-6 inline-flex items-center justify-center rounded-full bg-gray-200 px-6 py-3 text-sm font-bold text-gray-900 shadow-md transition-all hover:-translate-y-0.5 hover:bg-white"
                                         >
                                             Reset Filter
                                         </button>
@@ -394,10 +395,10 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                                                         key={key}
                                                         href={link.url ? `${link.url}#filtered-view` : '#'}
                                                         className={`rounded-full border px-4 py-2 text-sm font-bold transition-all ${link.active
-                                                            ? 'border-[#c97758] bg-[#c97758] text-white shadow-[0_14px_28px_rgba(201,119,88,0.22)]'
+                                                            ? 'border-gray-500 bg-gray-700 text-white shadow-md'
                                                             : link.url
-                                                                ? 'border-[#eadfce] bg-[#fcfaf6] text-[#67574b] hover:bg-white'
-                                                                : 'cursor-not-allowed border-[#efe4d6] bg-[#f6efe6] text-[#b4a797]'
+                                                                ? 'border-gray-800 bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-gray-200'
+                                                                : 'cursor-not-allowed border-gray-900 bg-gray-900/50 text-gray-700'
                                                             }`}
                                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                                     />
@@ -443,15 +444,15 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                     </>
                 )}
 
-                <footer className="mt-24 rounded-[34px] border border-[#eadfce] bg-[#f6ecdf] px-6 py-12 shadow-[0_18px_40px_rgba(82,59,40,0.08)] sm:px-10 lg:py-16" id="contact">
+                <footer className="mt-24 rounded-[34px] border border-gray-800 bg-gray-900 px-6 py-12 shadow-lg sm:px-10 lg:py-16" id="contact">
                     <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
                         <div className="max-w-xl">
-                            <span className="inline-flex items-center gap-2 rounded-full border border-[#eadfce] bg-[#fcfaf6] px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-[#a97b5b] shadow-[0_10px_20px_rgba(82,59,40,0.06)]">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-gray-700 bg-gray-800 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-gray-400 shadow-sm">
                                 Tertarik & Ingin Barter?
                             </span>
                             {/* PERBAIKAN: Copywriting Call To Action difokuskan untuk "Barter" */}
-                            <h2 className="mt-5 text-3xl font-black text-[#2f2f2f] sm:text-4xl">Mari Berdiskusi dan Bertukar Template!</h2>
-                            <p className="mt-4 text-base leading-7 text-[#67574b]">Website ini didedikasikan sebagai galeri preview. Kalau kamu melihat template yang menarik dan ingin melakukan barter (tukar template), langsung saja hubungi saya lewat kontak di bawah ini!</p>
+                            <h2 className="mt-5 text-3xl font-black text-gray-100 sm:text-4xl">Mari Berdiskusi dan Bertukar Template!</h2>
+                            <p className="mt-4 text-base leading-7 text-gray-400">Website ini didedikasikan sebagai galeri preview. Kalau kamu melihat template yang menarik dan ingin melakukan barter (tukar template), langsung saja hubungi saya lewat kontak di bawah ini!</p>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-4 lg:justify-end">
@@ -459,7 +460,7 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                             {settings?.email && (
                                 <a
                                     href={`mailto:${settings.email}`}
-                                    className="inline-flex items-center gap-2.5 rounded-full bg-[#c97758] px-7 py-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(201,119,88,0.22)] transition-all hover:-translate-y-0.5 hover:bg-[#b96449]"
+                                    className="inline-flex items-center gap-2.5 rounded-full bg-gray-200 px-7 py-4 text-sm font-bold text-gray-900 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-white"
                                 >
                                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -474,7 +475,7 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                                     href={`https://wa.me/${settings.whatsapp}`}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="inline-flex items-center gap-2.5 rounded-full border border-[#eadfce] bg-[#fcfaf6] px-7 py-4 text-sm font-bold text-[#2f2f2f] shadow-[0_10px_20px_rgba(82,59,40,0.05)] transition-all hover:-translate-y-0.5 hover:border-[#d9c8b0] hover:bg-white"
+                                    className="inline-flex items-center gap-2.5 rounded-full border border-gray-700 bg-gray-800 px-7 py-4 text-sm font-bold text-gray-300 shadow-sm transition-all hover:-translate-y-0.5 hover:border-gray-600 hover:bg-gray-700"
                                 >
                                     <svg className="h-5 w-5 text-[#25D366]" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.405-.883-.735-1.48-1.643-1.653-1.94-.173-.296-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
@@ -489,7 +490,7 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                                     href={settings.instagram}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="flex h-14 w-14 items-center justify-center rounded-full border border-[#eadfce] bg-[#fcfaf6] text-[#c97758] shadow-[0_10px_20px_rgba(82,59,40,0.05)] transition-all hover:-translate-y-0.5 hover:border-[#d9c8b0] hover:bg-white"
+                                    className="flex h-14 w-14 items-center justify-center rounded-full border border-gray-700 bg-gray-800 text-gray-300 shadow-sm transition-all hover:-translate-y-0.5 hover:border-gray-500 hover:bg-gray-700 hover:text-white"
                                     aria-label="Instagram"
                                 >
                                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -500,15 +501,15 @@ export default function Home({ categories, filters, isFiltered, activeCategory, 
                         </div>
                     </div>
 
-                    <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-[#eadfce] pt-8 text-sm font-medium text-[#7f6e5e]">
+                    <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-gray-800 pt-8 text-sm font-medium text-gray-500">
                         <p>© {new Date().getFullYear()} PaperCraft. All rights reserved.</p>
 
                         <div className="flex flex-wrap gap-6 font-bold">
                             {settings?.youtube && (
-                                <a href={settings.youtube} target="_blank" rel="noreferrer" className="transition-colors hover:text-[#c97758]">YouTube</a>
+                                <a href={settings.youtube} target="_blank" rel="noreferrer" className="transition-colors hover:text-white">YouTube</a>
                             )}
                             {settings?.tiktok && (
-                                <a href={settings.tiktok} target="_blank" rel="noreferrer" className="transition-colors hover:text-[#c97758]">TikTok</a>
+                                <a href={settings.tiktok} target="_blank" rel="noreferrer" className="transition-colors hover:text-white">TikTok</a>
                             )}
                         </div>
                     </div>

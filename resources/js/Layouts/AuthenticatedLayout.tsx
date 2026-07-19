@@ -30,27 +30,27 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
     return (
         // PERUBAHAN PENTING 1: Gunakan 'h-screen overflow-hidden' agar halaman web tidak bisa discroll secara global.
         <div
-            className="flex h-screen overflow-hidden font-sans text-[#2f2f2f] selection:bg-[#c97758] selection:text-white"
+            className="flex h-screen overflow-hidden font-sans text-gray-200 selection:bg-gray-700 selection:text-white"
             style={{
-                backgroundColor: '#fcfaf6',
+                backgroundColor: '#030712', // gray-950 equivalent
                 backgroundImage:
-                    'radial-gradient(circle at top left, rgba(233, 211, 191, 0.45), transparent 40%), radial-gradient(circle at 85% 12%, rgba(169, 199, 163, 0.25), transparent 35%), radial-gradient(circle at 15% 72%, rgba(230, 185, 91, 0.15), transparent 30%), linear-gradient(rgba(47, 47, 47, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(47, 47, 47, 0.02) 1px, transparent 1px)',
+                    'radial-gradient(circle at top left, rgba(55, 65, 81, 0.4), transparent 40%), radial-gradient(circle at 85% 12%, rgba(75, 85, 99, 0.2), transparent 35%), radial-gradient(circle at 15% 72%, rgba(31, 41, 55, 0.4), transparent 30%), linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
                 backgroundSize: '100% 100%, 100% 100%, 100% 100%, 42px 42px, 42px 42px',
             }}
         >
             {/* Sidebar (Desktop) */}
-            <aside className="hidden md:flex w-72 flex-col border-r border-[#eadfce] bg-[#f7f3ea]/80 backdrop-blur-md shadow-[10px_0_30px_rgba(82,59,40,0.03)] z-30 shrink-0">
-                <div className="flex h-20 shrink-0 items-center border-b border-[#eadfce] px-8">
+            <aside className="hidden md:flex w-72 flex-col border-r border-gray-800 bg-gray-950/80 backdrop-blur-md shadow-lg z-30 shrink-0">
+                <div className="flex h-20 shrink-0 items-center border-b border-gray-800 px-8">
                     <Link href="/" className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c97758] text-white shadow-[0_10px_20px_rgba(201,119,88,0.2)] ring-2 ring-[#fcfaf6]">
-                            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4h10l3 7-8 9-8-9 3-7z" /></svg>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-800 text-gray-200 shadow-sm ring-2 ring-gray-900 border border-gray-700 overflow-hidden">
+                            <img src="/logo.png" alt="PaperCraft Logo" className="w-full h-full object-cover" />
                         </div>
-                        <span className="text-xl font-black tracking-tight text-[#2f2f2f]">PaperCraft<span className="text-[#c97758]">.</span></span>
+                        <span className="text-xl font-black tracking-tight text-gray-100">PaperCraft<span className="text-gray-500">.</span></span>
                     </Link>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-6 py-8 space-y-2 scrollbar-thin scrollbar-thumb-[#eadfce]">
-                    <div className="mb-4 px-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#a97b5b]">Menu Utama</div>
+                <div className="flex-1 overflow-y-auto px-6 py-8 space-y-2 scrollbar-thin scrollbar-thumb-gray-700">
+                    <div className="mb-4 px-2 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">Menu Utama</div>
 
                     {navigation.map((item) => {
                         const isActive = url.startsWith(item.href);
@@ -59,11 +59,11 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${isActive
-                                    ? 'bg-[#c97758] text-white shadow-[0_12px_24px_rgba(201,119,88,0.22)]'
-                                    : 'text-[#67574b] hover:bg-[#f1e6d5] hover:text-[#2f2f2f]'
+                                    ? 'bg-gray-800 text-white shadow-md border border-gray-700'
+                                    : 'text-gray-400 hover:bg-gray-900 hover:text-white border border-transparent'
                                     }`}
                             >
-                                <svg className={`h-5 w-5 ${isActive ? 'text-white' : 'text-[#a97b5b]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className={`h-5 w-5 ${isActive ? 'text-white' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
                                 </svg>
                                 {item.name}
@@ -73,14 +73,14 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                 </div>
 
                 {/* Profil User di Bawah Sidebar */}
-                <div className="shrink-0 border-t border-[#eadfce] p-6 bg-[#fcfaf6]/50">
-                    <div className="flex items-center gap-4 rounded-2xl border border-[#eadfce] bg-white p-3 shadow-[0_8px_16px_rgba(82,59,40,0.04)]">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6b95b] font-black text-white shadow-[0_8px_16px_rgba(230,185,91,0.25)]">
+                <div className="shrink-0 border-t border-gray-800 p-6 bg-gray-900/30">
+                    <div className="flex items-center gap-4 rounded-2xl border border-gray-800 bg-gray-900 p-3 shadow-sm">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-800 border border-gray-700 font-black text-gray-300">
                             {user.name.charAt(0)}
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-bold text-[#2f2f2f]">{user.name}</p>
-                            <p className="truncate text-xs font-semibold text-[#8a7b6e]">{user.email}</p>
+                            <p className="truncate text-sm font-bold text-gray-200">{user.name}</p>
+                            <p className="truncate text-xs font-semibold text-gray-400">{user.email}</p>
                         </div>
                     </div>
                 </div>
@@ -91,11 +91,11 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
             <div className="flex flex-1 flex-col overflow-hidden">
 
                 {/* Header Utama (Topbar) */}
-                <header className="shrink-0 z-20 flex h-20 items-center justify-between border-b border-[#eadfce] bg-[#fcfaf6]/90 px-4 backdrop-blur-md sm:px-8 shadow-[0_4px_20px_rgba(82,59,40,0.02)]">
+                <header className="shrink-0 z-20 flex h-20 items-center justify-between border-b border-gray-800 bg-gray-950/90 px-4 backdrop-blur-md sm:px-8 shadow-sm">
                     {/* Tombol Mobile Menu */}
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="rounded-full border border-[#eadfce] bg-white p-2.5 text-[#c97758] shadow-[0_8px_16px_rgba(82,59,40,0.06)] transition-all hover:-translate-y-0.5 hover:bg-[#f1e6d5] md:hidden"
+                        className="rounded-full border border-gray-700 bg-gray-800 p-2.5 text-gray-300 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-gray-700 md:hidden"
                     >
                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -103,22 +103,22 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                     </button>
 
                     {/* Judul Halaman dinamis dari props header */}
-                    <div className="ml-4 flex-1 truncate text-xl font-black text-[#2f2f2f] md:ml-0">
+                    <div className="ml-4 flex-1 truncate text-xl font-black text-gray-100 md:ml-0">
                         {header}
                     </div>
 
                     {/* Action Header Kanan */}
                     <div className="flex items-center gap-5">
-                        <a href="/" target="_blank" className="flex items-center gap-2 text-sm font-bold text-[#67574b] transition-colors hover:text-[#c97758]">
+                        <a href="/" target="_blank" className="flex items-center gap-2 text-sm font-bold text-gray-400 transition-colors hover:text-white">
                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                             <span className="hidden sm:inline">Lihat Web</span>
                         </a>
-                        <div className="h-6 w-px bg-[#eadfce]"></div>
+                        <div className="h-6 w-px bg-gray-700"></div>
                         <Link
                             href="/logout"
                             method="post"
                             as="button"
-                            className="rounded-full bg-[#f4e7d4] px-4 py-2 text-xs font-bold uppercase tracking-[0.15em] text-[#a97b5b] transition-all hover:-translate-y-0.5 hover:bg-[#e9d3bf] hover:text-[#8a5d40] shadow-[0_8px_16px_rgba(82,59,40,0.05)]"
+                            className="rounded-full bg-gray-800 border border-gray-700 px-4 py-2 text-xs font-bold uppercase tracking-[0.15em] text-gray-300 transition-all hover:-translate-y-0.5 hover:bg-gray-700 hover:text-white shadow-sm"
                         >
                             Log Out
                         </Link>
@@ -127,11 +127,11 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
 
                 {/* Mobile Sidebar Overlay */}
                 {isMobileMenuOpen && (
-                    <div className="fixed inset-0 z-40 bg-[#2f2f2f]/40 backdrop-blur-sm md:hidden" onClick={() => setIsMobileMenuOpen(false)}>
-                        <div className="fixed inset-y-0 left-0 w-72 bg-[#fcfaf6] p-6 shadow-[20px_0_40px_rgba(82,59,40,0.15)]" onClick={(e) => e.stopPropagation()}>
+                    <div className="fixed inset-0 z-40 bg-gray-900/60 backdrop-blur-sm md:hidden" onClick={() => setIsMobileMenuOpen(false)}>
+                        <div className="fixed inset-y-0 left-0 w-72 bg-gray-950 p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
                             <div className="mb-6 flex items-center justify-between">
-                                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#a97b5b]">Menu Utama</span>
-                                <button onClick={() => setIsMobileMenuOpen(false)} className="text-[#a97b5b] hover:text-[#c97758] transition-colors">
+                                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">Menu Utama</span>
+                                <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-500 hover:text-white transition-colors">
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                 </button>
                             </div>
@@ -144,8 +144,8 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                                             href={item.href}
                                             onClick={() => setIsMobileMenuOpen(false)}
                                             className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${isActive
-                                                ? 'bg-[#c97758] text-white shadow-[0_12px_24px_rgba(201,119,88,0.22)]'
-                                                : 'text-[#67574b] hover:bg-[#f1e6d5] hover:text-[#2f2f2f]'
+                                                ? 'bg-gray-800 text-white shadow-md border border-gray-700'
+                                                : 'text-gray-400 hover:bg-gray-900 hover:text-white border border-transparent'
                                                 }`}
                                         >
                                             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,14 +157,14 @@ export default function AuthenticatedLayout({ user, header, children }: PropsWit
                                 })}
                             </div>
 
-                            <div className="mt-8 border-t border-[#eadfce] pt-6">
-                                <div className="flex items-center gap-4 rounded-2xl border border-[#eadfce] bg-white p-3 shadow-[0_8px_16px_rgba(82,59,40,0.04)]">
-                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e6b95b] font-black text-white shadow-[0_8px_16px_rgba(230,185,91,0.25)]">
+                            <div className="mt-8 border-t border-gray-800 pt-6">
+                                <div className="flex items-center gap-4 rounded-2xl border border-gray-800 bg-gray-900 p-3 shadow-sm">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-800 border border-gray-700 font-black text-gray-300">
                                         {user.name.charAt(0)}
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="truncate text-sm font-bold text-[#2f2f2f]">{user.name}</p>
-                                        <p className="truncate text-xs font-semibold text-[#8a7b6e]">{user.email}</p>
+                                        <p className="truncate text-sm font-bold text-gray-200">{user.name}</p>
+                                        <p className="truncate text-xs font-semibold text-gray-400">{user.email}</p>
                                     </div>
                                 </div>
                             </div>
