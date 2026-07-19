@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -16,7 +16,7 @@ class CategoryController extends Controller
         $categories = Category::whereNull('parent_id')->with('allChildren')->get();
 
         return Inertia::render('Admin/Category/Index', [
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
@@ -35,7 +35,7 @@ class CategoryController extends Controller
 
         Category::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . uniqid(),
+            'slug' => Str::slug($request->name).'-'.uniqid(),
             'parent_id' => $request->parent_id,
             'image_path' => $imagePath,
         ]);
@@ -66,7 +66,7 @@ class CategoryController extends Controller
 
         // Ubah slug hanya jika nama berubah
         if ($request->name !== $category->name) {
-            $data['slug'] = Str::slug($request->name) . '-' . uniqid();
+            $data['slug'] = Str::slug($request->name).'-'.uniqid();
         }
 
         if ($request->hasFile('image')) {

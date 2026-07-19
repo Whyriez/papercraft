@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Papercraft;
+use App\Models\PapercraftImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use App\Models\PapercraftImage;
-use Illuminate\Support\Facades\Storage;
 
 class PapercraftController extends Controller
 {
@@ -48,7 +48,7 @@ class PapercraftController extends Controller
         return Inertia::render('Admin/Papercraft/Index', [
             'papercrafts' => $papercrafts,
             'categories' => $categories,
-            'filters' => $request->only(['search', 'category_id', 'status'])
+            'filters' => $request->only(['search', 'category_id', 'status']),
         ]);
     }
 
@@ -58,7 +58,7 @@ class PapercraftController extends Controller
         $categories = Category::whereNull('parent_id')->with('allChildren')->get();
 
         return Inertia::render('Admin/Papercraft/Create', [
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
@@ -77,12 +77,12 @@ class PapercraftController extends Controller
         $filePath = null;
         if ($request->hasFile('template_file')) {
             $uploadedPath = $request->file('template_file')->store('templates', 'public');
-            $filePath = 'storage/' . $uploadedPath;
+            $filePath = 'storage/'.$uploadedPath;
         }
 
         $papercraft = Papercraft::create([
             'title' => $request->title,
-            'slug' => Str::slug($request->title) . '-' . uniqid(),
+            'slug' => Str::slug($request->title).'-'.uniqid(),
             'category_id' => $request->category_id,
             'description' => $request->description,
             'file_path' => $filePath,
@@ -94,7 +94,7 @@ class PapercraftController extends Controller
                 $path = $file->store('papercrafts', 'public');
 
                 $papercraft->images()->create([
-                    'image_path' => 'storage/' . $path,
+                    'image_path' => 'storage/'.$path,
                     'is_primary' => $index === 0 ? true : false,
                 ]);
             }
@@ -110,7 +110,7 @@ class PapercraftController extends Controller
 
         return Inertia::render('Admin/Papercraft/Edit', [
             'papercraft' => $papercraft,
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
@@ -130,11 +130,11 @@ class PapercraftController extends Controller
         if ($request->hasFile('template_file')) {
             if ($papercraft->file_path) {
                 $oldPath = str_replace('storage/', '', $papercraft->file_path);
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                Storage::disk('public')->delete($oldPath);
             }
 
             $uploadedPath = $request->file('template_file')->store('templates', 'public');
-            $papercraft->file_path = 'storage/' . $uploadedPath;
+            $papercraft->file_path = 'storage/'.$uploadedPath;
         }
 
         $papercraft->title = $request->title;
@@ -150,8 +150,8 @@ class PapercraftController extends Controller
                 $path = $file->store('papercrafts', 'public');
 
                 $papercraft->images()->create([
-                    'image_path' => 'storage/' . $path,
-                    'is_primary' => (!$hasPrimary && $index === 0) ? true : false,
+                    'image_path' => 'storage/'.$path,
+                    'is_primary' => (! $hasPrimary && $index === 0) ? true : false,
                 ]);
             }
         }
@@ -166,13 +166,13 @@ class PapercraftController extends Controller
         foreach ($papercraft->images as $image) {
             if ($image->image_path) {
                 $path = str_replace('storage/', '', $image->image_path);
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+                Storage::disk('public')->delete($path);
             }
         }
 
         if ($papercraft->file_path) {
             $path = str_replace('storage/', '', $papercraft->file_path);
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+            Storage::disk('public')->delete($path);
         }
 
         $papercraft->delete();

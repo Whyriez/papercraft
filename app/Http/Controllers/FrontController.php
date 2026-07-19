@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Papercraft;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class FrontController extends Controller
             'categories' => $categories,
             'filters' => $request->only(['search', 'category', 'all']),
             'isFiltered' => $isFiltered,
-            'banners' => \App\Models\Banner::with('papercraft.primaryImage', 'papercraft.category')->latest()->get(),
+            'banners' => Banner::with('papercraft.primaryImage', 'papercraft.category')->latest()->get(),
         ];
 
         if ($isFiltered) {
@@ -36,7 +37,7 @@ class FrontController extends Controller
 
                 // 1. Cari kategori yang namanya mirip dengan kata kunci
                 $matchedCategories = Category::with('children.children')
-                    ->where('name', 'like', '%' . $searchTerm . '%')
+                    ->where('name', 'like', '%'.$searchTerm.'%')
                     ->get();
 
                 // 2. Kumpulkan semua ID kategori tersebut beserta turunannya
@@ -53,9 +54,9 @@ class FrontController extends Controller
 
                 // 3. Terapkan filter: Cari di Judul ATAU di ID Kategori yang cocok
                 $query->where(function ($q) use ($searchTerm, $searchCategoryIds) {
-                    $q->where('title', 'like', '%' . $searchTerm . '%');
+                    $q->where('title', 'like', '%'.$searchTerm.'%');
 
-                    if (!empty($searchCategoryIds)) {
+                    if (! empty($searchCategoryIds)) {
                         $q->orWhereIn('category_id', $searchCategoryIds);
                     }
                 });
@@ -96,7 +97,7 @@ class FrontController extends Controller
                     $q->where('is_published', true)->latest()->limit(4);
                 }, 'papercrafts.primaryImage', 'papercrafts.category'])
                 ->get()
-                ->filter(fn($cat) => $cat->papercrafts->isNotEmpty())
+                ->filter(fn ($cat) => $cat->papercrafts->isNotEmpty())
                 ->values();
         }
 

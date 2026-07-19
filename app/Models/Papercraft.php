@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Papercraft extends Model
 {
     protected $fillable = [
-        'category_id', 'title', 'slug', 'description', 
-        'file_path', 'is_published'
+        'category_id', 'title', 'slug', 'description',
+        'file_path', 'is_published',
     ];
 
     public function category(): BelongsTo

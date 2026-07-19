@@ -12,10 +12,10 @@ class SettingController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'whatsapp'  => 'nullable|string',
-            'email'     => 'nullable|email',
-            'youtube'   => 'nullable|url',
-            'tiktok'    => 'nullable|url',
+            'whatsapp' => 'nullable|string',
+            'email' => 'nullable|email',
+            'youtube' => 'nullable|url',
+            'tiktok' => 'nullable|url',
             'instagram' => 'nullable|url',
         ]);
 

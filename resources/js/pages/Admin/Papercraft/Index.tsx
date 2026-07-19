@@ -131,7 +131,7 @@ export default function Index({
 
     // Fungsi Render Opsi Kategori untuk Filter (Mendukung Hierarki Tak Terbatas)
     const renderCategoryOptions = (cats: Category[], level = 0) => {
-        let options: JSX.Element[] = [];
+        let options: any[] = [];
         cats.forEach((cat) => {
             const prefix = level > 0 ? '—'.repeat(level) + ' ' : '';
             options.push(

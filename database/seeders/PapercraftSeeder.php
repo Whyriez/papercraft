@@ -14,29 +14,29 @@ class PapercraftSeeder extends Seeder
         // 1. Setup Kategori Dinamis
         $cosplay = Category::create([
             'name' => 'Cosplay',
-            'slug' => Str::slug('Cosplay')
+            'slug' => Str::slug('Cosplay'),
         ]);
 
         // --- Sub: Helmet ---
         $helmet = $cosplay->children()->create([
             'name' => 'Helmet',
-            'slug' => Str::slug('Cosplay Helmet')
+            'slug' => Str::slug('Cosplay Helmet'),
         ]);
 
         $helmetAnimal = $helmet->children()->create([
             'name' => 'Animal',
-            'slug' => Str::slug('Helmet Animal')
+            'slug' => Str::slug('Helmet Animal'),
         ]);
 
         $helmetCharacter = $helmet->children()->create([
             'name' => 'Character',
-            'slug' => Str::slug('Helmet Character')
+            'slug' => Str::slug('Helmet Character'),
         ]);
 
         // --- Sub: Mask ---
         $mask = $cosplay->children()->create([
             'name' => 'Mask',
-            'slug' => Str::slug('Cosplay Mask')
+            'slug' => Str::slug('Cosplay Mask'),
         ]);
 
         $mask->children()->createMany([
@@ -47,7 +47,7 @@ class PapercraftSeeder extends Seeder
         // --- Sub: Suit ---
         $suit = $cosplay->children()->create([
             'name' => 'Suit',
-            'slug' => Str::slug('Cosplay Suit')
+            'slug' => Str::slug('Cosplay Suit'),
         ]);
 
         // 2. Setup Sampel Data Papercrafts beserta Gambarnya

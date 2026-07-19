@@ -44,7 +44,7 @@ export default function Create({ auth, categories }: Props) {
     };
 
     const renderCategoryOptions = (cats: Category[], level = 0) => {
-        let options: JSX.Element[] = [];
+        let options: any[] = [];
 
         cats.forEach((cat) => {
             const prefix = level > 0 ? '—'.repeat(level) + ' ' : '';

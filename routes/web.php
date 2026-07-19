@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\PapercraftController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FrontController;
+use App\Models\Banner;
+use App\Models\Papercraft;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -31,8 +33,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Halaman Utama Dashboard
     Route::get('/dashboard', function () {
-        $banners = \App\Models\Banner::with('papercraft.primaryImage', 'papercraft.category')->latest()->get();
-        $papercrafts = \App\Models\Papercraft::latest()->get();
+        $banners = Banner::with('papercraft.primaryImage', 'papercraft.category')->latest()->get();
+        $papercrafts = Papercraft::latest()->get();
 
         return Inertia::render('Dashboard', [
             'banners' => $banners,
