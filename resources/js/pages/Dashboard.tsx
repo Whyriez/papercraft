@@ -433,7 +433,13 @@ export default function Dashboard({
 
             <div className="grid gap-8 lg:grid-cols-[1fr_1.5fr]">
                 {/* Form Tambah Banner */}
-                <div className="relative h-fit overflow-hidden rounded-[30px] border border-gray-800 bg-gray-900 p-6 shadow-lg sm:p-8">
+                <div className="relative z-30 h-fit rounded-[30px] border border-gray-800 bg-gray-900 p-6 shadow-lg sm:p-8">
+
+                    {/* 🌟 Bungkus efek blur dengan overflow-hidden terpisah agar dropdown form tidak ikut terpotong 🌟 */}
+                    <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[30px]">
+                        <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-gray-700/30 blur-2xl"></div>
+                    </div>
+
                     <h3 className="relative z-10 mb-6 text-xl font-black text-gray-100">
                         Tambah Banner
                     </h3>
@@ -442,6 +448,9 @@ export default function Dashboard({
                         onSubmit={submitBanner}
                         className="relative z-10 space-y-6"
                     >
+                        {/* 
+                            ... Bagian isian form biarkan sama seperti sebelumnya ... 
+                        */}
                         <div className="flex gap-4 rounded-2xl border border-gray-700 bg-gray-800 p-1.5">
                             <button
                                 type="button"
@@ -586,8 +595,8 @@ export default function Dashboard({
                             const rawImgPath = isCustom
                                 ? banner.image_path
                                 : (banner.papercraft?.primaryImage
-                                      ?.image_path ??
-                                  banner.papercraft?.primary_image?.image_path);
+                                    ?.image_path ??
+                                    banner.papercraft?.primary_image?.image_path);
                             const badgeStr = isCustom ? 'Custom' : 'Papercraft';
 
                             const finalImage = rawImgPath
