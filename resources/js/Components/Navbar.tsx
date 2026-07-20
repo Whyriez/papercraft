@@ -41,9 +41,7 @@ export default function Navbar({
         <nav className="fixed top-4 right-0 left-0 z-50 px-4 sm:px-6">
             <div className="mx-auto flex max-w-7xl flex-col gap-0 rounded-[34px] border border-gray-800 bg-gray-900/95 px-5 py-3 shadow-lg shadow-black/20 backdrop-blur-sm transition-all duration-300 sm:py-4">
                 <div className="flex items-center justify-between gap-4 sm:gap-6">
-                    {/* Logo (shrink-0 agar tidak tertekan) */}
                     <Link href="/" className="flex shrink-0 items-center gap-3">
-                        {/* 🌟 PERBAIKAN 2: Ukuran logo sedikit dikecilkan di mobile agar teks merek muat */}
                         <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl border border-gray-700 bg-gray-800 text-gray-200 shadow-sm transition-transform hover:-translate-y-0.5 sm:h-12 sm:w-12">
                             <img
                                 src="/logo.png"
@@ -51,13 +49,12 @@ export default function Navbar({
                                 className="h-full w-full object-cover"
                             />
                         </div>
-                        {/* 🌟 PERBAIKAN 2: Class 'hidden sm:block' dihapus. Ukuran teks disesuaikan untuk mobile */}
                         <div>
                             <p className="text-[9px] font-bold tracking-[0.34em] text-gray-400 uppercase sm:text-[10px]">
-                                PaperCraft
+                                Lipat Kertas
                             </p>
                             <p className="text-xs font-semibold text-gray-200 sm:text-sm">
-                                Layered models
+                                Papercraft
                             </p>
                         </div>
                     </Link>

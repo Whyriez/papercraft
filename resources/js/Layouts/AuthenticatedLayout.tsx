@@ -45,7 +45,6 @@ export default function AuthenticatedLayout({
     ];
 
     return (
-        // PERUBAHAN PENTING 1: Gunakan 'h-screen overflow-hidden' agar halaman web tidak bisa discroll secara global.
         <div
             className="flex h-screen overflow-hidden font-sans text-gray-200 selection:bg-gray-700 selection:text-white"
             style={{
@@ -68,7 +67,7 @@ export default function AuthenticatedLayout({
                             />
                         </div>
                         <span className="text-xl font-black tracking-tight text-gray-100">
-                            PaperCraft<span className="text-gray-500">.</span>
+                            LipatKertas<span className="text-gray-500">.</span>
                         </span>
                     </Link>
                 </div>
@@ -85,11 +84,10 @@ export default function AuthenticatedLayout({
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${
-                                    isActive
-                                        ? 'border border-gray-700 bg-gray-800 text-white shadow-md'
-                                        : 'border border-transparent text-gray-400 hover:bg-gray-900 hover:text-white'
-                                }`}
+                                className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${isActive
+                                    ? 'border border-gray-700 bg-gray-800 text-white shadow-md'
+                                    : 'border border-transparent text-gray-400 hover:bg-gray-900 hover:text-white'
+                                    }`}
                             >
                                 <svg
                                     className={`h-5 w-5 ${isActive ? 'text-white' : 'text-gray-500'}`}
@@ -236,11 +234,10 @@ export default function AuthenticatedLayout({
                                             onClick={() =>
                                                 setIsMobileMenuOpen(false)
                                             }
-                                            className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${
-                                                isActive
-                                                    ? 'border border-gray-700 bg-gray-800 text-white shadow-md'
-                                                    : 'border border-transparent text-gray-400 hover:bg-gray-900 hover:text-white'
-                                            }`}
+                                            className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${isActive
+                                                ? 'border border-gray-700 bg-gray-800 text-white shadow-md'
+                                                : 'border border-transparent text-gray-400 hover:bg-gray-900 hover:text-white'
+                                                }`}
                                         >
                                             <svg
                                                 className="h-5 w-5"
