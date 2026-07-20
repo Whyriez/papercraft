@@ -36,8 +36,8 @@ interface Props {
 export default function Detail({ papercraft, related = [] }: Props) {
     const [activeImage, setActiveImage] = useState<Image | null>(
         papercraft.images.find((img) => img.is_primary) ||
-            papercraft.images[0] ||
-            null,
+        papercraft.images[0] ||
+        null,
     );
 
     const [isCopied, setIsCopied] = useState(false);
@@ -399,7 +399,7 @@ export default function Detail({ papercraft, related = [] }: Props) {
             <main className="relative mx-auto max-w-7xl px-4 pt-28 sm:px-6 lg:pt-32">
                 <nav className="mb-8 flex flex-wrap items-center gap-y-2 text-sm font-medium text-gray-400">
                     <Link
-                        href="/"
+                        href="/#categories" // 👈 Tambahkan #categories di sini
                         className="transition-colors hover:text-gray-200"
                     >
                         Home
@@ -409,7 +409,7 @@ export default function Detail({ papercraft, related = [] }: Props) {
                         <div key={cat.id} className="flex items-center">
                             <span className="mx-2 text-gray-600">/</span>
                             <Link
-                                href={`/?category=${cat.slug}`}
+                                href={`/?category=${cat.slug}#filtered-view`} // 👈 Tambahkan #filtered-view di sini
                                 className="transition-colors hover:text-gray-200"
                             >
                                 {cat.name}
@@ -488,11 +488,10 @@ export default function Detail({ papercraft, related = [] }: Props) {
                                                 onClick={() =>
                                                     setActiveImage(img)
                                                 }
-                                                className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 transition-all ${
-                                                    activeImage?.id === img.id
-                                                        ? 'scale-105 border-gray-500 opacity-100 shadow-sm'
-                                                        : 'border-transparent opacity-60 hover:scale-105 hover:opacity-100'
-                                                }`}
+                                                className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 transition-all ${activeImage?.id === img.id
+                                                    ? 'scale-105 border-gray-500 opacity-100 shadow-sm'
+                                                    : 'border-transparent opacity-60 hover:scale-105 hover:opacity-100'
+                                                    }`}
                                             >
                                                 <img
                                                     src={`/${img.image_path}`}
